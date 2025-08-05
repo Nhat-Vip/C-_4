@@ -227,3 +227,4 @@ C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\D
 C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\compressed\fqjnfijg8j-x84aztqg9l.gz
 C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\compressed\3x7shwvg47-pepzgwig8m.gz
 C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\compressed\zyd7i1pt8c-pepzgwig8m.gz
+C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\ASM_C#4.sourcelink.json

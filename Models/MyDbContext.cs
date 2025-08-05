@@ -64,11 +64,11 @@ public class MyDbContext : DbContext
          .OnDelete(DeleteBehavior.NoAction);
 
 
-        // modelBuilder.Entity<SeatingChart>()
-        // .HasOne(stc => stc.User)
-        // .WithMany(us => us.SeatingCharts)
-        // .HasForeignKey(stc => stc.UserId)
-        // .OnDelete(DeleteBehavior.NoAction);
+        modelBuilder.Entity<SeatingChart>()
+        .HasOne(stc => stc.User)
+        .WithMany(us => us.SeatingCharts)
+        .HasForeignKey(stc => stc.UserId)
+        .OnDelete(DeleteBehavior.NoAction);
 
 
         modelBuilder.Entity<TicketGroup>()
