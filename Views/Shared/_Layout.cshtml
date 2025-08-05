@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ASM_C_4</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ASM_C_4.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-md navbar-toggleable-md p-3 navbar-light bg-success border-bottom box-shadow mb-3">
+            <div class="container-fluid fs-5">
+                <a class="navbar-brand fs-4 fw-bold text-white" asp-area="" asp-controller="Home" asp-action="Index">TicketNow</a>
+                <div class=" position-relative border-1 border-black flex-grow-1" style="min-height: 35px;">
+                    <form action="" class="rounded-5 ps-3 search bg-white w-auto d-flex">
+                            @* <label for="Search" class="form-label">Search</label> *@
+                            <input type="text" class="border-0 form-control">
+                            <button type="submit" class="btn"><svg xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 640 640" width="24px" height="24px">
+                                    <path
+                                        d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 
+                                        579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64
+                                        157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 
+                                        351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z" />
+                                </svg>
+                            </button>
+                    </form>
+                </div>
+                <div class="d-block d-lg-none">
+                    <div class="dropdown">
+                        <button class="btn btn-light border-0" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a href="#" class="dropdown-item">Login</a></li>
+                            <li><a href="#" class="dropdown-item">Sign up</a></li>
+                            @* <li><hr href="#" class="dropdown-divider"></hr></li> *@
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="CollapseNav" class="d-none d-lg-flex navbar-nav justify-content-end w-100">
+                    <button class="btn btn-success fs-5 border-2 border-white rounded-5 me-3">Create Event</button>
+                    <div class="d-sm-inline-flex justify-content-end text-white">
+                        <ul class="navbar-nav align-items-center">
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Login</a>
+                            </li>
+                            |
+                            <li class="nav-item">
+                                <a class="nav-link text-white text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Sign up</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - ASM_C_4 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+<script>
+    const search = document.querySelector('.search');
+    const input = document.querySelector('.search input');
+
+    input.addEventListener('input', () => {
+        if (input.value.trim() !== '') {
+            search.classList.add('active');  // Giữ mở rộng khi có chữ
+        } else {
+            search.classList.remove('active'); // Thu nhỏ lại khi trống
+        }
+    });
+
+</script>
+</html>

@@ -1,0 +1,69 @@
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Nền -->
+  <rect width="800" height="600" fill="#f8f8f8" />
+
+  <!-- Quầy order -->
+  <rect x="20" y="20" width="200" height="60" rx="8" ry="8" fill="#d9534f" />
+  <text x="120" y="55" font-size="18" font-weight="bold" text-anchor="middle" fill="white">ORDER COUNTER</text>
+
+  <!-- Lối vào -->
+  <rect x="680" y="520" width="100" height="60" rx="8" ry="8" fill="#5bc0de" />
+  <text x="730" y="555" font-size="18" font-weight="bold" text-anchor="middle" fill="white">ENTRANCE</text>
+
+  <!-- Vẽ bàn tròn với ghế -->
+  <!-- Hàm tạo bàn: circle + 4 ghế -->
+  <g transform="translate(150, 200)">
+    <circle r="40" fill="#f0ad4e" />
+    <circle cx="-60" cy="0" r="10" fill="#5cb85c" />
+    <circle cx="60" cy="0" r="10" fill="#5cb85c" />
+    <circle cx="0" cy="-60" r="10" fill="#5cb85c" />
+    <circle cx="0" cy="60" r="10" fill="#5cb85c" />
+    <text y="8" text-anchor="middle" font-size="16" fill="white">B1</text>
+  </g>
+
+  <g transform="translate(350, 200)">
+    <circle r="40" fill="#f0ad4e" />
+    <circle cx="-60" cy="0" r="10" fill="#5cb85c" />
+    <circle cx="60" cy="0" r="10" fill="#5cb85c" />
+    <circle cx="0" cy="-60" r="10" fill="#5cb85c" />
+    <circle cx="0" cy="60" r="10" fill="#5cb85c" />
+    <text y="8" text-anchor="middle" font-size="16" fill="white">B2</text>
+  </g>
+
+  <g transform="translate(550, 200)">
+    <circle r="40" fill="#f0ad4e" />
+    <circle cx="-60" cy="0" r="10" fill="#5cb85c" />
+    <circle cx="60" cy="0" r="10" fill="#5cb85c" />
+    <circle cx="0" cy="-60" r="10" fill="#5cb85c" />
+    <circle cx="0" cy="60" r="10" fill="#5cb85c" />
+    <text y="8" text-anchor="middle" font-size="16" fill="white">B3</text>
+  </g>
+
+  <g transform="translate(150, 400)">
+    <circle r="40" fill="#f0ad4e" />
+    <circle cx="-60" cy="0" r="10" fill="#5cb85c" />
+    <circle cx="60" cy="0" r="10" fill="#5cb85c" />
+    <circle cx="0" cy="-60" r="10" fill="#5cb85c" />
+    <circle cx="0" cy="60" r="10" fill="#5cb85c" />
+    <text y="8" text-anchor="middle" font-size="16" fill="white">B4</text>
+  </g>
+
+  <g transform="translate(350, 400)">
+    <circle r="40" fill="#f0ad4e" />
+    <circle cx="-60" cy="0" r="10" fill="#5cb85c" />
+    <circle cx="60" cy="0" r="10" fill="#5cb85c" />
+    <circle cx="0" cy="-60" r="10" fill="#5cb85c" />
+    <circle cx="0" cy="60" r="10" fill="#5cb85c" />
+    <text y="8" text-anchor="middle" font-size="16" fill="white">B5</text>
+  </g>
+
+  <g transform="translate(550, 400)">
+    <circle r="40" fill="#f0ad4e" />
+    <circle cx="-60" cy="0" r="10" fill="#5cb85c" />
+    <circle cx="60" cy="0" r="10" fill="#5cb85c" />
+    <circle cx="0" cy="-60" r="10" fill="#5cb85c" />
+    <circle cx="0" cy="60" r="10" fill="#5cb85c" />
+    <text y="8" text-anchor="middle" font-size="16" fill="white">B6</text>
+  </g>
+</svg>
