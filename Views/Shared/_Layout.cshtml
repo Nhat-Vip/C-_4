@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,13 +9,14 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ASM_C_4.styles.css" asp-append-version="true" />
 </head>
+</head>
 <body>
     <header>
         <nav class="navbar navbar-expand-md navbar-toggleable-md p-3 navbar-light bg-success border-bottom box-shadow mb-3">
             <div class="container-fluid fs-5">
                 <a class="navbar-brand fs-4 fw-bold text-white" asp-area="" asp-controller="Home" asp-action="Index">TicketNow</a>
                 <div class=" position-relative border-1 border-black flex-grow-1" style="min-height: 35px;">
-                    <form action="" class="rounded-5 ps-3 search bg-white w-auto d-flex">
+                    <form action="" class="rounded-5 ps-3 search bg-white w-auto d-flex" style="max-width: 300px !important;">
                             @* <label for="Search" class="form-label">Search</label> *@
                             <input type="text" class="border-0 form-control">
                             <button type="submit" class="btn"><svg xmlns="http://www.w3.org/2000/svg"
@@ -35,11 +36,30 @@
                             aria-expanded="false">
                             <span class="navbar-toggler-icon"></span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a href="#" class="dropdown-item">Login</a></li>
-                            <li><a href="#" class="dropdown-item">Sign up</a></li>
-                            @* <li><hr href="#" class="dropdown-divider"></hr></li> *@
-                        </ul>
+                        @if(!User.Identity.IsAuthenticated){
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Login</a></li>
+                                <li><a asp-action="Index" asp-controller="Register" class="dropdown-item">Sign up</a></li>
+                                @* <li><hr href="#" class="dropdown-divider"></hr></li> *@
+                            </ul>
+                        }
+                        @if(User.IsInRole("Admin")){
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Profile</a></li>
+                                <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">MyTicket</a></li>
+                                <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Dashboard</a></li>
+                                <li><a asp-action="Index" asp-controller="Register" class="dropdown-item">Log out</a></li>
+                                @* <li><hr href="#" class="dropdown-divider"></hr></li> *@
+                            </ul>
+                        }
+                        @if(User.IsInRole("User")){
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Profile</a></li>
+                                <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">MyTicket</a></li>
+                                <li><a asp-action="Index" asp-controller="Register" class="dropdown-item">Log out</a></li>
+                                @* <li><hr href="#" class="dropdown-divider"></hr></li> *@
+                            </ul>
+                        }
                     </div>
                 </div>
                 
