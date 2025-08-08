@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ASM_C_4.styles.css" asp-append-version="true" />
 </head>
-</head>
 <body>
     <header>
         <nav class="navbar navbar-expand-md navbar-toggleable-md p-3 navbar-light bg-success border-bottom box-shadow mb-3">
@@ -32,48 +31,98 @@
                 </div>
                 <div class="d-block d-lg-none">
                     <div class="dropdown">
-                        <button class="btn btn-light border-0" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
+                        @* Hiển thị drop menu cho dt khi chưa đăng nhập *@
+
                         @if(!User.Identity.IsAuthenticated){
+                            <button class="btn btn-light border-0" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Login</a></li>
-                                <li><a asp-action="Index" asp-controller="Register" class="dropdown-item">Sign up</a></li>
+                                <li><a asp-action="Login" asp-controller="Account" class="dropdown-item">Login</a></li>
+                                <li><a asp-action="SignUp" asp-controller="Account" class="dropdown-item">Sign up</a></li>
                                 @* <li><hr href="#" class="dropdown-divider"></hr></li> *@
                             </ul>
                         }
-                        @if(User.IsInRole("Admin")){
+
+                        @* Hiển thị drop menu cho dt khi đăng nhập là Admin *@
+
+                        @if(User.IsInRole("Admin")) {
+                            <button class="btn border-0" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <img src="images/dutcuc.png" width="30px" class="rounded-circle" alt="">
+                            </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Profile</a></li>
-                                <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">MyTicket</a></li>
-                                <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Dashboard</a></li>
-                                <li><a asp-action="Index" asp-controller="Register" class="dropdown-item">Log out</a></li>
-                                @* <li><hr href="#" class="dropdown-divider"></hr></li> *@
+                                <li><a asp-action="Profile" asp-controller="User" class="dropdown-item">Thông tin cá nhân</a></li>
+                                <li><a asp-action="Profile" asp-controller="User" class="dropdown-item">Tạo sự kiện</a></li>
+                                <li><a asp-action="Dashboad" asp-controller="Admin" class="dropdown-item">Dashboard</a></li>
+                                <li><hr href="#" class="dropdown-divider"></hr></li>
+                                <li><a asp-action="LogOut" asp-controller="Account" class="dropdown-item">Đăng xuất</a></li>
                             </ul>
                         }
+
+                        @* Hiển thị drop menu cho dt khi đăng nhập là user *@
+
                         @if(User.IsInRole("User")){
+                            <button class="btn border-0 dropdown-toggle btn-success" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <img src="images/dutcuc.png" width="50px" class="account-img rounded-circle" alt="">
+                            </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Profile</a></li>
-                                <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">MyTicket</a></li>
-                                <li><a asp-action="Index" asp-controller="Register" class="dropdown-item">Log out</a></li>
-                                @* <li><hr href="#" class="dropdown-divider"></hr></li> *@
+                                <li><a asp-action="Profile" asp-controller="User" class="dropdown-item">Thông tin cá
+                                        nhân</a></li>
+                                <li><a asp-action="Profile" asp-controller="User" class="dropdown-item">Tạo sự kiện</a></li>
+                                <li><hr href="#" class="dropdown-divider"></hr></li>
+                                <li><a asp-action="LogOut" asp-controller="Account" class="dropdown-item">Đăng xuất</a></li>
                             </ul>
                         }
+
                     </div>
                 </div>
-                
+                @* Menu cho màn hinh lớn *@
                 <div id="CollapseNav" class="d-none d-lg-flex navbar-nav justify-content-end w-100">
                     <button class="btn btn-success fs-5 border-2 border-white rounded-5 me-3">Create Event</button>
                     <div class="d-sm-inline-flex justify-content-end text-white">
                         <ul class="navbar-nav align-items-center">
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Login" asp-action="Index">Login</a>
-                            </li>
-                            |
-                            <li class="nav-item">
-                                <a class="nav-link text-white text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Sign up</a>
-                            </li>
+                            @* Menu khi chưa đăng nhập *@
+                            @if(User.Identity.IsAuthenticated){
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-area="" asp-controller="Account"
+                                        asp-action="Login">Login</a>
+                                </li>
+                                <span>|</span>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white text-dark" asp-area="" asp-controller="Account"
+                                        asp-action="SignUp">Sign up</a>
+                                </li>
+                            }
+                            else{
+                                @* Hiển thị menu khi đăng nhập là admin *@
+
+                                if (User.IsInRole("Admin")){
+                                    <div class="dropdown">
+                                        <button class="btn btn-light" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <img src="images/dutcuc.png" class="rounded-circle" alt="">
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Profile</a></li>
+                                            <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">MyTicket</a></li>
+                                            <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Dashboard</a></li>
+                                            <li><a asp-action="Index" asp-controller="Register" class="dropdown-item">Log out</a></li>
+                                        </div>
+                                    </div>
+                                }
+                                @* Hiển thị menu khi đăng nhập là user *@
+
+                                else if(User.IsInRole("User")){
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Profile</a></li>
+                                        <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">MyTicket</a></li>
+                                        <li><a asp-action="Index" asp-controller="Register" class="dropdown-item">Log out</a></li>
+                                        @* <li><hr href="#" class="dropdown-divider"></hr></li> *@
+                                    </ul>
+                                }
+                            }
                         </ul>
                     </div>
                 </div>

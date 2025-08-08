@@ -223,8 +223,8 @@ C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\D
 C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\ASM_C#4.pdb
 C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\ASM_C#4.genruntimeconfig.cache
 C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\ref\ASM_C#4.dll
-C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\compressed\159eol9i6x-ur4ml0tzjc.gz
 C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\compressed\fqjnfijg8j-x84aztqg9l.gz
 C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\compressed\3x7shwvg47-pepzgwig8m.gz
 C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\compressed\zyd7i1pt8c-pepzgwig8m.gz
 C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\ASM_C#4.sourcelink.json
+C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\obj\Debug\net9.0\compressed\159eol9i6x-2hbsny8a45.gz

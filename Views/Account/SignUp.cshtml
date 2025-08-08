@@ -1,0 +1,93 @@
+    <style>
+        body {
+            background: url('https://wallpaperaccess.com/full/317501.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+            max-width: 400px;
+            margin: auto;
+            margin-top: 100px;
+        }
+
+        .form-box h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .btn-social {
+            width: 48%;
+        }
+
+        .or-separator {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .or-separator span {
+            background: #fff;
+            padding: 0 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .or-separator::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ccc;
+            z-index: 0;
+        }
+
+        .small-links {
+            font-size: 0.9rem;
+        }
+    </style>
+
+    <div class="form-box shadow">
+        <h2>SIGN UP</h2>
+
+        <div class="d-flex justify-content-between mb-3">
+            <button class="btn btn-primary btn-social"><i class="bi bi-facebook"></i> Facebook</button>
+            <button class="btn btn-info text-white btn-social"><i class="bi bi-twitter"></i> Twitter</button>
+        </div>
+
+        <div class="or-separator"><span>or</span></div>
+
+        <form method="post" asp-action="Register" asp-controller="Login">
+            <div class="mb-3">
+                <input type="text" class="form-control" name="username" placeholder="Username" required>
+            </div>
+            <div class="mb-3">
+                <input type="email" class="form-control" name="email" placeholder="Email" required>
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control" name="password" placeholder="Password" required>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3 small-links">
+                <div>
+                    <input type="checkbox" id="remember" />
+                    <label for="remember">Remember me</label>
+                </div>
+                
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100">Sign Up</button>
+        </form>
+
+        <div class="text-center mt-3 small-links">
+            Already have an account? <a asp-action="Login" asp-controller="Account">Login now</a>
+        </div>
+    </div>

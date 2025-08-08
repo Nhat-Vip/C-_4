@@ -110,12 +110,12 @@
     </style>
 </head>
 <body>
-    <form asp-action="Login" asp-controller="Login" method="post" id="form-login">
+    <form asp-action="Login" method="post" id="form-login">
         <h1 class="form-heading">Form đăng nhập</h1>
 
         <div class="form-group">
             <i class="fas fa-user"></i>
-            <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required />
+            <input type="text" name="email" class="form-control" placeholder="Email" required />
         </div>
 
         <div class="form-group">
@@ -124,10 +124,10 @@
         </div>
 
         <div class="small-links">
-            Chưa có tài khoản? <a href="/Home/Privacy">SignUp now</a>
+            Chưa có tài khoản? <a href="/Account/SignUp">SignUp now</a>
         </div>
 
-        <input type="submit" value="Đăng nhập" class="form-submit" />
+        <button type="submit" value="Đăng nhập" class="form-submit" />
     </form>
 
     <!-- Bootstrap JS -->

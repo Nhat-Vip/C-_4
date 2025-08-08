@@ -32,6 +32,22 @@ public enum EventStatus
     Pending,
     Approved,
     Past,
-    Upcoming
+    Upcoming,
+    Cancel
 
+}
+public static class EnumExtension
+{
+    public static string GetVietNameseLabel(this EventStatus eventStatus)
+    {
+        return eventStatus switch
+        {
+            EventStatus.Pending => "Đang chờ xử lý",
+            EventStatus.Approved => "Đã duyệt",
+            EventStatus.Past => "Đã qua",
+            EventStatus.Upcoming => "Sắp tới",
+            EventStatus.Cancel => "Bị từ chối",
+            _ => "Khong biet"
+        };
+    }
 }
