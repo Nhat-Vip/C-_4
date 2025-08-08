@@ -1,26 +1,30 @@
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 public class AccountController : Controller
 {
+    private readonly IAccountService _account;
     private readonly MyDbContext _context;
-    public AccountController(MyDbContext _context)
+    public AccountController(MyDbContext context, IAccountService account)
     {
-        
+        _account = account;
+        _context = context;
     }
     public IActionResult Login()
     {
         return View();
     }
-
+ 
     [HttpPost]
-    public IActionResult Login(string email, string password)
+    public async Task<IActionResult> Login(string email, string password)
     {
-
-        if (email == "admin" && password == "123")
+        var user = await _account.Login(email, password);
+        if (user!=null)
         {
+            await LoginUser(user.Email!, user.UserName!, user.Role.ToString(), user.UserId);
             // Đăng nhập thành công, chuyển hướng về Home
             return RedirectToAction("Index", "Home");
         }
@@ -28,26 +32,35 @@ public class AccountController : Controller
         ViewBag.Error = "Sai tài khoản hoặc mật khẩu!";
         return View();
     }
+    [HttpGet]
     public IActionResult SignUp()
     {
-        return View();
+        return View(new User());
     }
 
     [HttpPost]
-    public IActionResult SignUp(string username, string password, string confirmPassword)
+    public async Task<IActionResult> SignUp(User user)
     {
-        if (password != confirmPassword)
+        user.Role = Role.User;
+        var findUser = _context.Users.FirstOrDefault(us => us.Email == user.Email);
+        if (findUser != null)
         {
-            ViewBag.Error = "Mật khẩu xác nhận không đúng.";
-            return View();
-        }
+            ViewBag.Error = "Email đã tồn tại vui lòng sử dụng email khác";
+            return View(user);
 
-        // Giả sử đăng ký thành công (chưa lưu DB)
-        ViewBag.Success = "Đăng ký thành công! Bạn có thể đăng nhập.";
-        return RedirectToAction("Index", "Login");
+        }
+        var signUp = await _account.SignUp(user);
+        if (!signUp)
+        {
+            ViewBag.Error = "Có lỗi xảy ra vui lòng thử lại";
+            return View(user);
+        }
+        ViewBag.Success = "Đăng ký thành công!";
+        await LoginUser(user.Email!, user.UserName!, user.Role.ToString(), user.UserId);
+        return RedirectToAction("Index", "Home");
     }
 
-    private async Task SignInUser(string email, string userName, string role, int userId)
+    private async Task LoginUser(string email, string userName, string role, int userId)
     {
         var claims = new List<Claim>
         {
@@ -63,7 +76,7 @@ public class AccountController : Controller
         new AuthenticationProperties { IsPersistent = true });
 
     }
-    private async Task<IActionResult> LogOut()
+    public async Task<IActionResult> LogOut()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Index", "Home");

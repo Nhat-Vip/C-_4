@@ -19,7 +19,6 @@ public static class SeedData
             context.Users.AddRange(
                 new User
                 {
-                    UserId = 1,
                     UserName = "Admin",
                     Email = "admin@gmail.com",
                     Role = Role.Admin,
