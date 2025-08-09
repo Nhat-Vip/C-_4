@@ -3,58 +3,22 @@
 
     var eventsData = new[]
     {
-        new { Id=1, Image="Images/1.jpg", Category="UIA", Location="Hà Nội", Title="THIÊN LÝ ƠI", Date="12/08/2025", Price="200.000 VNĐ" },
-        new { Id=2, Image="Images/2.jpg", Category="Music", Location="TP HCM", Title="ĐÊM NHẠC HOA", Date="15/08/2025", Price="350.000 VNĐ" },
+        new { Id=1, Image="Images/1.jpg", Category="Concert", Location="Hà Nội", Title="THIÊN LÝ ƠI", Date="12/08/2025", Price="200.000 VNĐ" },
+        new { Id=2, Image="Images/2.jpg", Category="Concert", Location="TP HCM", Title="ĐÊM NHẠC HOA", Date="15/08/2025", Price="350.000 VNĐ" },
         new { Id=3, Image="Images/images.jpg", Category="Sport", Location="Đà Nẵng", Title="GIẢI CHẠY BÃI BIỂN", Date="20/08/2025", Price="150.000 VNĐ" },
-        new { Id=4, Image="Images/4.jpg", Category="Theatre", Location="Hải Phòng", Title="KỊCH CỔ TÍCH", Date="25/08/2025", Price="250.000 VNĐ" },
-        new { Id=5, Image="Images/5.jpg", Category="Art", Location="Cần Thơ", Title="TRIỂN LÃM TRANH", Date="30/08/2025", Price="Free" },
-        new { Id=6, Image="Images/6.jpg", Category="Food", Location="Huế", Title="LỄ HỘI ẨM THỰC", Date="02/09/2025", Price="100.000 VNĐ" },
-        new { Id=7, Image="Images/7.jpg", Category="Travel", Location="Nha Trang", Title="TOUR BIỂN ĐẢO", Date="05/09/2025", Price="1.200.000 VNĐ" },
+        new { Id=4, Image="Images/4.jpg", Category="Concert", Location="Hải Phòng", Title="KỊCH CỔ TÍCH", Date="25/08/2025", Price="250.000 VNĐ" },
+        new { Id=5, Image="Images/5.jpg", Category="Concert", Location="Cần Thơ", Title="TRIỂN LÃM TRANH", Date="30/08/2025", Price="Free" },
+        new { Id=6, Image="Images/06.jpg", Category="Concert", Location="Huế", Title="LỄ HỘI ẨM THỰC", Date="02/09/2025", Price="100.000 VNĐ" },
+        new { Id=7, Image="Images/7.jpg", Category="Sport", Location="Nha Trang", Title="TOUR BIỂN ĐẢO", Date="05/09/2025", Price="1.200.000 VNĐ" },
         new { Id=8, Image="Images/8.jpg", Category="Concert", Location="Hà Nội", Title="NHẠC HỘI", Date="10/09/2025", Price="Free" }
     };
 }
 <div class="container">
 
-    <div class="carousel w-100 h-25 m-0 bg-black slide mb-5" id="Carousel" data-bs-ride="carousel">
-        <div class="carousel-indicators">
-            <button type="button" class="active" data-bs-target="#Carousel" data-bs-slide-to="0"></button>
-            <button type="button" data-bs-target="#Carousel" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#Carousel" data-bs-slide-to="2"></button>
-            <button type="button" data-bs-target="#Carousel" data-bs-slide-to="3"></button>
-        </div>
-
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="Images/Cheems.jpg" alt="" height="500px" style="object-fit: cover; " class="d-block w-100">
-            </div>
-            <div class="carousel-item">
-                <img src="Images/Cheems.jpg" alt="" height="500px" style="object-fit: cover;"  class="d-block w-100">
-            </div>
-            <div class="carousel-item">
-                <img src="Images/Cheems.jpg" alt="" height="500px" style="object-fit: cover;" class="d-block w-100">
-            </div>
-            <div class="carousel-item">
-                <img src="Images/Cheems.jpg" alt="" height="500px" style="object-fit: cover;" class="d-block w-100">
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#Carousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#Carousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
-    </div>
-
     <div class="mb-4 text-center">
         <h3 class="fw-bold">Sự Kiện</h3>
         <span class="fs-5 fw-medium text-secondary mx-3 category-link" data-category="Concert">Concert</span>
         <span class="fs-5 fw-medium text-secondary mx-3 category-link" data-category="Sport">Sport</span>
-        <span class="fs-5 fw-medium text-secondary mx-3 category-link" data-category="Music">Music</span>
-        <span class="fs-5 fw-medium text-secondary mx-3 category-link" data-category="UIA">UIA</span>
-        <span class="fs-5 fw-medium text-secondary mx-3 category-link" data-category="Theatre">Theatre</span>
-        <span class="fs-5 fw-medium text-secondary mx-3 category-link" data-category="Art">Art</span>
-        <span class="fs-5 fw-medium text-secondary mx-3 category-link" data-category="Food">Food</span>
-        <span class="fs-5 fw-medium text-secondary mx-3 category-link" data-category="Travel">Travel</span>
         <span class="fs-5 fw-medium text-secondary mx-3 category-link" data-category="All">Tất cả</span>
     </div>
 
@@ -126,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
 <!-- CSS cải tiến -->
 <style>
@@ -168,12 +132,17 @@ document.addEventListener('DOMContentLoaded', function () {
         background-color: rgba(0, 0, 0, 0.5);
     }
 </style>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const categoryLinks = document.querySelectorAll('.category-link');
-        categoryLinks.forEach(link => {
-            link.addEventListener('click', function () {
+document.addEventListener('DOMContentLoaded', function () {
+    const categoryLinks = document.querySelectorAll('.category-link');
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', function () {
+            const category = this.getAttribute('data-category');
+            if (category === 'Concert' || category === 'Sport') {
                 alert(`You clicked on category: ${this.textContent}`);
-            });
+            }
         });
     });
+});
+</script>
