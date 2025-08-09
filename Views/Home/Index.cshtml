@@ -13,6 +13,7 @@
         new { Id=8, Image="Images/8.jpg", Category="Concert", Location="Hà Nội", Title="NHẠC HỘI", Date="10/09/2025", Price="Free" }
     };
 }
+
 <div class="container">
 
     <div class="mb-4 text-center">
@@ -32,7 +33,7 @@
                         <img src="@e.Image" class="card-img-top img-fluid event-img" alt="@e.Title">
                     </div>
                     <div class="card-body p-3">
-                        <span class="badge rounded-pill px-3 py-2 text-dark" style="background-color: rgba(255,192,203,0.5);">
+                        <span class="badge rounded-pill px-3 py-2 text-dark bg-pink-light">
                             @e.Category
                         </span>
                         <p class="mt-3 mb-1 text-muted small">
@@ -43,7 +44,17 @@
                             <i class="bi bi-calendar-event me-1"></i> @e.Date
                         </p>
                         <p class="fw-bold text-danger mb-3">@e.Price</p>
-                        <a href="/Home/EventDetails/@e.Id" class="btn btn-danger w-100 fw-bold">Mua vé</a>
+                        <a href="javascript:void(0)"
+                           class="btn btn-danger w-100 fw-bold btn-buy"
+                           data-id="@e.Id"
+                           data-title="@e.Title"
+                           data-location="@e.Location"
+                           data-date="@e.Date"
+                           data-price="@e.Price"
+                           data-category="@e.Category"
+                           data-image="@e.Image">
+                            Mua vé
+                        </a>
                     </div>
                 </div>
             </div>
@@ -51,48 +62,41 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const categoryLinks = document.querySelectorAll('.category-link');
-    const eventItems = document.querySelectorAll('.event-item');
+<!-- Modal mua vé -->
+<div class="modal fade" id="buyModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form asp-controller="Event" asp-action="BuyTicket" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="eventTitle"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <img id="eventImage" src="" alt="" class="img-fluid rounded mb-3">
+          <input type="hidden" name="EventId" id="eventId">
+          <p><i class="bi bi-geo-alt-fill"></i> <span id="eventLocation"></span></p>
+          <p><i class="bi bi-calendar-event"></i> <span id="eventDate"></span></p>
+          <p class="fw-bold text-danger" id="eventPrice"></p>
+          <p><span class="badge bg-secondary" id="eventCategory"></span></p>
+          <div class="mb-3">
+            <label for="CustomerName" class="form-label">Tên của bạn</label>
+            <input type="text" class="form-control" name="CustomerName" required>
+          </div>
+          <div class="mb-3">
+            <label for="Quantity" class="form-label">Số lượng vé</label>
+            <input type="number" class="form-control" name="Quantity" min="1" value="1" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-primary">Xác nhận mua</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
-    function clearActive() {
-        categoryLinks.forEach(link => {
-            link.classList.remove('text-danger', 'fw-bold');
-            link.classList.add('text-secondary');
-        });
-    }
-
-    categoryLinks.forEach(link => {
-        link.style.cursor = 'pointer';
-        link.addEventListener('click', function () {
-            const selectedCategory = this.getAttribute('data-category');
-
-            clearActive();
-            this.classList.remove('text-secondary');
-            this.classList.add('text-danger', 'fw-bold');
-
-            eventItems.forEach(item => {
-                if (selectedCategory === 'All' || item.getAttribute('data-category') === selectedCategory) {
-                    item.style.display = '';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-    });
-
-    // Mặc định chọn "Tất cả"
-    const allCategoryLink = document.querySelector('.category-link[data-category="All"]');
-    if (allCategoryLink) {
-        allCategoryLink.click();
-    }
-});
-</script>
-
-<script src="https://kit.fontawesome.com/a076d05399.js"></script>
-
-<!-- CSS cải tiến -->
+<!-- CSS -->
 <style>
     .event-card:hover {
         transform: translateY(-5px);
@@ -117,31 +121,52 @@ document.addEventListener('DOMContentLoaded', function () {
     .bg-pink-light {
         background-color: rgba(255, 192, 203, 0.5);
     }
-    .transition-hover {
-        transition: transform 0.3s ease, filter 0.3s ease;
-    }
-    .transition-hover:hover {
-        transform: scale(1.05);
-        filter: brightness(1.1);
-    }
-    .carousel-indicators button {
-        background-color: #fff;
-    }
-    .carousel-control-prev-icon,
-    .carousel-control-next-icon {
-        background-color: rgba(0, 0, 0, 0.5);
-    }
 </style>
 
+<!-- JS -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const categoryLinks = document.querySelectorAll('.category-link');
+    const eventItems = document.querySelectorAll('.event-item');
+    const buyButtons = document.querySelectorAll('.btn-buy');
+    const modal = new bootstrap.Modal(document.getElementById('buyModal'));
+
+    // Lọc sự kiện theo category
+    function clearActive() {
+        categoryLinks.forEach(link => {
+            link.classList.remove('text-danger', 'fw-bold');
+            link.classList.add('text-secondary');
+        });
+    }
     categoryLinks.forEach(link => {
         link.addEventListener('click', function () {
-            const category = this.getAttribute('data-category');
-            if (category === 'Concert' || category === 'Sport') {
-                alert(`You clicked on category: ${this.textContent}`);
-            }
+            const selectedCategory = this.getAttribute('data-category');
+            clearActive();
+            this.classList.remove('text-secondary');
+            this.classList.add('text-danger', 'fw-bold');
+
+            eventItems.forEach(item => {
+                if (selectedCategory === 'All' || item.getAttribute('data-category') === selectedCategory) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+    document.querySelector('.category-link[data-category="All"]').click();
+
+    // Xử lý nút mua vé
+    buyButtons.forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.getElementById('eventId').value = this.dataset.id;
+            document.getElementById('eventTitle').textContent = this.dataset.title;
+            document.getElementById('eventLocation').textContent = this.dataset.location;
+            document.getElementById('eventDate').textContent = this.dataset.date;
+            document.getElementById('eventPrice').textContent = this.dataset.price;
+            document.getElementById('eventCategory').textContent = this.dataset.category;
+            document.getElementById('eventImage').src = this.dataset.image;
+            modal.show();
         });
     });
 });
