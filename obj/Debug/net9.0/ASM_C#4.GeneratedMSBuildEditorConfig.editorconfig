@@ -17,49 +17,49 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ASM_C_4
 build_property.RootNamespace = ASM_C_4
-build_property.ProjectDir = C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4\
+build_property.ProjectDir = D:\projert_c#4\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\MSI\Documents\thư mục không có tiêu đề\ASP\ASM_C#4
+build_property.MSBuildProjectDirectory = D:\projert_c#4
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/MSI/Documents/thư mục không có tiêu đề/ASP/ASM_C\#4/Views/Account/Login.cshtml]
+[D:/projert_c\#4/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MSI/Documents/thư mục không có tiêu đề/ASP/ASM_C\#4/Views/Account/SignUp.cshtml]
+[D:/projert_c\#4/Views/Account/SignUp.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxTaWduVXAuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MSI/Documents/thư mục không có tiêu đề/ASP/ASM_C\#4/Views/Home/Index.cshtml]
+[D:/projert_c\#4/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MSI/Documents/thư mục không có tiêu đề/ASP/ASM_C\#4/Views/Home/Privacy.cshtml]
+[D:/projert_c\#4/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MSI/Documents/thư mục không có tiêu đề/ASP/ASM_C\#4/Views/Shared/Error.cshtml]
+[D:/projert_c\#4/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MSI/Documents/thư mục không có tiêu đề/ASP/ASM_C\#4/Views/Shared/_ValidationScriptsPartial.cshtml]
+[D:/projert_c\#4/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MSI/Documents/thư mục không có tiêu đề/ASP/ASM_C\#4/Views/_ViewImports.cshtml]
+[D:/projert_c\#4/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MSI/Documents/thư mục không có tiêu đề/ASP/ASM_C\#4/Views/_ViewStart.cshtml]
+[D:/projert_c\#4/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MSI/Documents/thư mục không có tiêu đề/ASP/ASM_C\#4/Views/Shared/_Layout.cshtml]
+[D:/projert_c\#4/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-6wvmk5oxi4
