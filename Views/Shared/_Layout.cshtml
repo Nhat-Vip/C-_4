@@ -85,7 +85,7 @@
                     <div class="d-sm-inline-flex justify-content-end text-white">
                         <ul class="navbar-nav align-items-center">
                             @* Menu khi chưa đăng nhập *@
-                            @if(User.Identity.IsAuthenticated){
+                            @if(!User.Identity.IsAuthenticated){
                                 <li class="nav-item">
                                     <a class="nav-link text-white" asp-area="" asp-controller="Account"
                                         asp-action="Login">Login</a>
