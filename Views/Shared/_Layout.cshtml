@@ -82,7 +82,7 @@
                 @* Menu cho màn hinh lớn *@
                 <div id="CollapseNav" class="d-none d-lg-flex navbar-nav justify-content-end w-100">
                     <button class="btn btn-success fs-5 border-2 border-white rounded-5 me-3">Create Event</button>
-                    <div class="d-sm-inline-flex justify-content-end text-white">
+                    <div class="d-sm-inline-flex justify-content-end text-white bg-success">
                         <ul class="navbar-nav align-items-center">
                             @* Menu khi chưa đăng nhập *@
                             @if(!User.Identity.IsAuthenticated){
@@ -101,26 +101,36 @@
 
                                 if (User.IsInRole("Admin")){
                                     <div class="dropdown">
-                                        <button class="btn btn-light" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <img src="images/dutcuc.png" class="rounded-circle" alt="">
+                                        <button class="btn btn-light p-0 border-0 rounded-circle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <img src="images/dutcuc.png" width="30px" class="rounded-circle" alt="">
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-end">
-                                            <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Profile</a></li>
-                                            <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">MyTicket</a></li>
-                                            <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Dashboard</a></li>
-                                            <li><a asp-action="Index" asp-controller="Register" class="dropdown-item">Log out</a></li>
+                                            <li><a asp-action="Profile" asp-controller="User" class="dropdown-item">Profile</a></li>
+                                            @* <li><a asp-action="Index" asp-controller="" class="dropdown-item">MyTicket</a></li> *@
+                                            <li><a asp-action="Dashboard" asp-controller="Admin" class="dropdown-item">Dashboard</a></li>
+                                            <li>
+                                                <hr href="#" class="dropdown-divider">
+                                                </hr>
+                                            </li>
+
+                                            <li><a asp-action="LogOut" asp-controller="Account" class="dropdown-item">Log out</a></li>
                                         </div>
                                     </div>
                                 }
                                 @* Hiển thị menu khi đăng nhập là user *@
 
                                 else if(User.IsInRole("User")){
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">Profile</a></li>
-                                        <li><a asp-action="Index" asp-controller="Login" class="dropdown-item">MyTicket</a></li>
-                                        <li><a asp-action="Index" asp-controller="Register" class="dropdown-item">Log out</a></li>
-                                        @* <li><hr href="#" class="dropdown-divider"></hr></li> *@
-                                    </ul>
+                                    <div class="dropdown">
+                                        <button class="btn btn-light" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <img src="images/dutcuc.png" width="30px" class="rounded-circle" alt="">
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a asp-action="Profile" asp-controller="User" class="dropdown-item">Profile</a></li>
+                                            <li><a asp-action="Create" asp-controller="Event" class="dropdown-item">Create Event</a></li>
+                                            <li><hr href="#" class="dropdown-divider"></hr></li>
+                                            <li><a asp-action="LogOut" asp-controller="Account" class="dropdown-item">Log out</a></li>
+                                        </ul>
+                                    </div>
                                 }
                             }
                         </ul>
