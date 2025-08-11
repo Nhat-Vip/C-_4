@@ -13,6 +13,9 @@ public class MyDbContext : DbContext
     public DbSet<User> Users { set; get; }
     public DbSet<Refund> Refunds{ set; get; }
     public DbSet<TicketDetail> TicketDetails{ set; get; }
+    public DbSet<ShowTime> ShowTimes{ set; get; }
+    public DbSet<ShowTimeSeat>ShowTimeSeats{ set; get; }
+    public DbSet<ShowTimeTicketGroup> ShowTimeTicketGroups{ set; get; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -36,11 +39,6 @@ public class MyDbContext : DbContext
         modelBuilder.Entity<Refund>()
         .Property(r => r.Status)
         .HasConversion<string>();
-
-        modelBuilder.Entity<Seat>()
-        .Property(s => s.Status)
-        .HasConversion<string>();
-
 
         modelBuilder.Entity<Ticket>()
         .HasOne(tk => tk.User)
@@ -68,9 +66,9 @@ public class MyDbContext : DbContext
         .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<TicketDetail>()
-        .HasOne(td => td.Seat)
+        .HasOne(td => td.ShowTimeSeat)
         .WithOne(s => s.TicketDetail)
-        .HasForeignKey<TicketDetail>(td => td.SeatId)
+        .HasForeignKey<TicketDetail>(td => new { td.ShowTimeId,td.SeatId })
         .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Payment>()
@@ -85,10 +83,10 @@ public class MyDbContext : DbContext
         .HasForeignKey(e => e.UserId)
         .OnDelete(DeleteBehavior.NoAction);
 
-        modelBuilder.Entity<Event>()
-        .HasOne(e => e.SeatingChart)
-        .WithMany(stc => stc.Events)
-        .HasForeignKey(e => e.SeatingChartId)
+        modelBuilder.Entity<SeatingChart>()
+        .HasOne(stc => stc.Event)
+        .WithOne(e => e.SeatingChart)
+        .HasForeignKey<SeatingChart>(stc => stc.SeatingChartId)
         .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<SeatGroup>()
@@ -104,17 +102,43 @@ public class MyDbContext : DbContext
          .OnDelete(DeleteBehavior.NoAction);
 
 
-        modelBuilder.Entity<SeatingChart>()
-        .HasOne(stc => stc.User)
-        .WithMany(us => us.SeatingCharts)
-        .HasForeignKey(stc => stc.UserId)
-        .OnDelete(DeleteBehavior.NoAction);
-
-
         modelBuilder.Entity<TicketGroup>()
         .HasMany(tkg => tkg.SeatGroups)
         .WithOne(sg => sg.TicketGroup)
         .HasForeignKey(tkg => tkg.TicketGroupId)
         .OnDelete(DeleteBehavior.SetNull);
-    }
+
+
+        modelBuilder.Entity<ShowTime>()
+        .HasOne(st => st.Event)
+        .WithMany(ev => ev.ShowTimes)
+        .HasForeignKey(st => st.EventId);
+
+        modelBuilder.Entity<ShowTimeSeat>()
+        .HasKey(sts => new { sts.ShowTimeId, sts.SeatId });
+
+        modelBuilder.Entity<ShowTimeSeat>()
+        .HasOne(sts => sts.ShowTime)
+        .WithMany(st => st.ShowTimeSeats)
+        .HasForeignKey(sts => sts.ShowTimeId);
+
+        modelBuilder.Entity<ShowTimeSeat>()
+        .HasOne(sts => sts.Seat)
+        .WithMany(s => s.ShowTimeSeats)
+        .HasForeignKey(sts => sts.SeatId);
+
+        modelBuilder.Entity<ShowTimeTicketGroup>()
+        .HasKey(stk => new { stk.ShowTimeId, stk.TicketGruopId });
+
+        modelBuilder.Entity<ShowTimeTicketGroup>()
+        .HasOne(stk => stk.ShowTime)
+        .WithMany(st => st.ShowTimeTicketGroups)
+        .HasForeignKey(stk => stk.ShowTimeId);
+
+        modelBuilder.Entity<ShowTimeTicketGroup>()
+        .HasOne(stk => stk.TicketGroup)
+        .WithMany(tkg => tkg.ShowTimeTicketGroups)
+        .HasForeignKey(stk => stk.TicketGruopId);
+
+    }   
 }

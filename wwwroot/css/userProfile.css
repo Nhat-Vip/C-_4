@@ -1,0 +1,274 @@
+.userInfoMenu {
+    padding-top: 10px;
+    background-color: rgb(66, 60, 60);
+    height: 100vh;
+}
+
+@media only screen and (max-width:767px) {
+    .userInfoMenu {
+        height: auto;
+    }
+}
+
+/* body{
+        background-color: #0f2f25;
+        font-family: Arial, sans-serif;
+    } */
+
+body {
+    background-color: #1a1a1a;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #1a1a1a;
+    padding: 10px 20px;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    background-color: #4a4a4a;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.nav-btn.active {
+    background-color: #00cc00;
+}
+
+.nav-btn:hover {
+    background-color: #666;
+}
+
+.content {
+    text-align: center;
+    padding: 50px;
+}
+
+.no-data-image {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 20px;
+}
+
+.no-data-text {
+    color: #808080;
+    font-size: 16px;
+}
+
+.nav-tabs .nav-link.disabled {
+    border: none;
+    color: rgb(255, 255, 255, 0.5);
+    opacity: 1;
+
+}
+
+.nav-tabs {
+    border: none !important;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+}
+
+.nav-link {
+    position: relative;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+}
+
+.nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 0;
+    height: 3px;
+    transition: width 0.3s ease;
+    background-color: rgb(10, 96, 10);
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    opacity: 0.5;
+    color: white;
+}
+
+.nav-link.active::after {
+    width: 100%;
+}
+
+.nav-link.active {
+    color: rgb(19, 116, 19) !important;
+    border: none;
+    opacity: 1;
+    background-color: transparent !important;
+}
+
+label {
+    font-weight: bold;
+    color: white;
+}
+
+.fa-camera {
+    color: white;
+    font-size: 20px;
+}
+
+.camera {
+    position: absolute;
+    bottom: 10px;
+    right: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    border-radius: 45%;
+    width: max-content;
+    height: max-content;
+    background-color: green;
+}
+
+.tab-content>.tab-pane {
+    display: none !important;
+}
+
+.tab-content>.tab-pane.active {
+    display: flex !important;
+}
+
+.event-info {
+    /* margin-top: 10px; */
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #00cc00;
+    background-color: #f5f6f8;
+    /* Xám nhạt */
+    background: linear-gradient(135deg, #2c2c2c, #3a3a3a);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 204, 0, 0.3);
+    padding: 25px;
+}
+
+.page-link:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.page-link {
+    color: white;
+    margin: 5px;
+    background-color: #666;
+}
+
+.page-link.active {
+    border-color: white;
+    background-color: #3f3d3d;
+}
+
+.page-link:hover,
+.page-link:focus {
+    color: white;
+    background-color: #979088;
+}
+
+.page-link.disabled {
+    pointer-events: all !important;
+    background-color: #666;
+    opacity: 0.5;
+}
+
+.page-link:hover.disabled {
+    color: white !important;
+    cursor: not-allowed !important;
+}
+
+
+.ticket-table-container {
+    width: 800px;
+    background: linear-gradient(135deg, #2c2c2c, #3a3a3a);
+    border: 2px solid #00cc00;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 204, 0, 0.3);
+}
+
+.ticket-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.ticket-table th,
+.ticket-table td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #00cc00;
+}
+
+.ticket-table th {
+    background-color: #00cc00;
+    color: #1a1a1a;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.ticket-table tr:last-child td {
+    border-bottom: none;
+}
+
+.ticket-table tr:hover {
+    cursor: pointer;
+    background-color: #444;
+    transition: background-color 0.3s;
+}
+
+.ticket-table td {
+    color: #fff;
+}
+
+.ticket-table .status {
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.ticket-table .status-pending {
+    background-color: #ff9800;
+    color: #fff;
+}
+
+.ticket-table .status-success {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+.ticket-table .status-cancelled {
+    background-color: #f44336;
+    color: #fff;
+}
+
+.event-card {
+    border: 2px solid #00cc00;
+    background: linear-gradient(135deg, #2c2c2c, #3a3a3a);
+    box-shadow: 0 4px 15px rgba(0, 204, 0, 0.3);
+}

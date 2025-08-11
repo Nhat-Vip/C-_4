@@ -1,0 +1,229 @@
+@section Styles{
+    <style>
+        body {
+            width: 100vw;
+            height: auto;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .header-event {
+            box-sizing: border-box;
+            width: 100vw;
+            height: calc(50vh + 50px);
+            /* max-height: 40vh; */
+        }
+
+        .header-event>img {
+            position: absolute;
+            width: 100vw;
+            min-height: auto;
+            max-height: calc(50vh + 50px);
+            /* filter: blur(20px); */
+            z-index: -10;
+        }
+
+        .header-event::before {
+            content: "";
+            position: absolute;
+            width: 100vw;
+            min-height: calc(50vh + 50px);
+            z-index: -1;
+            background-color: rgb(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+
+
+        }
+
+        .event-body {
+            box-shadow: 0 0 5px black;
+            width: calc(100% - 50px);
+            padding: 10px;
+            /* border: 1px solid rgb(0, 0, 0,0.2); */
+        }
+
+        .event-body a {
+            text-decoration: none;
+            margin-right: 10px;
+            font-size: large;
+            font-weight: 500;
+            position: relative;
+            color: rgb(0, 0, 0, 0.5);
+        }
+
+        .event-body a::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            width: 0;
+            height: 2px;
+            left: 0;
+            transition: width 0.3s ease;
+            background-color: green;
+        }
+
+        .event-body a:hover::after {
+            width: 100%;
+
+        }
+
+        .card a:hover:after {
+            width: 0;
+        }
+
+        .card a.btn {
+            border: 0 !important;
+        }
+
+        .event-img {
+            height: 300px;
+            max-height: 30vh;
+        }
+
+        #ShowTime {
+            /* padding: 10px; */
+            width: 70%;
+            color: white;
+            border-radius: 10px;
+            background-color: rgb(38, 38, 41);
+        }
+
+        .card {
+            color: white;
+            background-color: rgb(38, 38, 41);
+        }
+
+        /* From Uiverse.io by adamgiebl */
+        .buy-ticket {
+            font-size: 18px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: inline-block;
+            text-align: center;
+            font-weight: bold;
+            padding: 0.7em 2em;
+            border: 3px solid #FF0072;
+            border-radius: 5px;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.1);
+            color: #FF0072;
+            text-decoration: none;
+            transition: 0.3s ease all;
+            z-index: 1;
+        }
+
+        .buy-ticket:before {
+            transition: 0.5s all ease;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            right: 50%;
+            bottom: 0;
+            opacity: 0;
+            content: '';
+            background-color: #FF0072;
+            z-index: -1;
+        }
+
+        .buy-ticket:hover,
+        .buy-ticket:focus {
+            color: white;
+        }
+
+        .buy-ticket:hover:before,
+        .buy-ticket:focus:before {
+            transition: 0.5s all ease;
+            left: 0;
+            right: 0;
+            opacity: 1;
+        }
+
+        .buy-ticket:active {
+            transform: scale(0.9);
+        }
+    </style>
+}
+<div class="header-event w-100 ">
+    <img src="/Images/2.jpg" alt="">
+    <div class="row p-5">
+        <div class="col-5">
+            <img src="/Images/2.jpg" class="event-img w-100 mb-3" alt="">
+            <a asp-action="BookingTicket" asp-controller="Event" class="buy-ticket w-100 fs-4 fw-bold mb-3">Đặt vé</a>
+        </div>
+        <div class="col-6" style="color: rgb(255, 255, 255);">
+            <h4>Hài Kịch: Tung Hoành Pattaya</h4>
+            <h5 class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-calendar"></i>20:00 - 23:00, 10 tháng
+                08, 2025</h5>
+            <h5 class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-location-dot"></i>Nhà Văn Hóa Thanh
+                Niên Hồ Chí Minh
+                Số 4 Phạm Ngọc Thạch, Phường Bến Nghé, Quận 1, Thành Phố Hồ Chí Minh</h5>
+            <h5 class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-money-bill"></i>Giá vé
+                <p style="text-indent: 30px; font-weight: 200;">Từ 350.000 VND đến 350.000 VND</p>
+            </h5>
+        </div>
+    </div>
+</div>
+<div class="event-body container-fluid rounded-2 p-3 m-3">
+    <div class="d-flex">
+        <a href="#GioiThieu">Giới thiệu</a>
+        <a href="#ShowTime">Thông tin xuất chiếu</a>
+    </div>
+    <hr>
+    <h3 id="GioiThieu">Giới thiệu</h3>
+    <p class="text-black fw-normal" style="line-height: 30px;">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni odit architecto facere blanditiis nostrum
+        sapiente debitis autem earum tempora sed modi maiores nam tenetur quod, beatae quae natus explicabo
+        cupiditate.
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse eveniet praesentium qui omnis iure, veniam
+        nesciunt iusto voluptas error ea officiis sed labore, voluptates, quae adipisci in sequi unde tempora.
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Explicabo totam corporis reprehenderit quae, autem
+        quisquam distinctio animi mollitia quibusdam ipsa perferendis ullam, pariatur, eum voluptatum odit deleniti
+        odio accusamus optio?
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Temporibus nam officiis quia itaque est et,
+        tempore dolore at perspiciatis quis! Deleniti, laborum eligendi tenetur repellat illo ullam neque illum
+        corporis.
+        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Tempore velit consequatur magnam nobis impedit,
+        eum perferendis illo fugit illum. Aperiam in magni adipisci sed consectetur exercitationem perspiciatis
+        fugiat ipsam suscipit!
+    </p>
+    <div id="ShowTime">
+        <h4 class="text-center p-3">Thông tin xuất chiếu</h4>
+        <div class=" card">
+            <div class="card-header row">
+                <a class="btn col-8 text-white text-start" href="#ShowTimeOne" data-bs-toggle="collapse">20:00 -
+                    23:00<br>10 Tháng 08, 2025 </a>
+                <button class="btn col-3 btn-success" style="height: max-content">Mua vé</button>
+            </div>
+            <div id="ShowTimeOne" class="collapse show" data-bs-parent="#ShowTime">
+                <div class="card-body">
+                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quod accusantium sed voluptatum non ad
+                    et quia ipsam delectus placeat, quam enim labore quisquam nostrum officia dolores magni quo
+                    ducimus accusamus.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <a class="btn col-8 text-white text-start" href="#ShowTimeTwo" data-bs-toggle="collapse">20:00 -
+                    23:00<br>10 Tháng 08, 2025 </a>
+                <button class="btn col-3 btn-success" style="height: max-content">Mua vé</button>
+            </div>
+            <div id="ShowTimeTwo" class="collapse" data-bs-parent="#ShowTime">
+                <div class="card-body">
+                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quod accusantium sed voluptatum non ad
+                    et quia ipsam delectus placeat, quam enim labore quisquam nostrum officia dolores magni quo
+                    ducimus accusamus.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,150 @@
+@section Styles{
+    <link rel="stylesheet" href="/css/userProfile.css">
+}
+<div class="container-fluid">
+    <div class="row">
+        <ul class="nav nav-tabs col-12 h-full col-lg-2 flex-row flex-lg-column userInfoMenu">
+            <li class="nav-item mb-4">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#UserInfo" id="tab1"
+                    role="tab">Thông tin cá nhân</button>
+            </li>
+            <li class="nav-item mb-4">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#UserTicket" id="tab1" role="tab">Vé của
+                    tôi</button>
+            </li>
+            <li class="nav-item mb-4">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#UserEvent" id="tab1" role="tab">Sự kiện
+                    của tôi</button>
+            </li>
+        </ul>
+        <div class="tab-content col-12 col-lg-10 mt-3" id="tabContent">
+            <div class="tab-pane show flex-column justify-content-center fade active" id="UserInfo" role="tabpanel">
+                <h3 class="text-center fw-bold text-white">Thông tin tài khoản</h3>
+                <hr class="text-white">
+                <form action="" onsubmit=" return CheckMail()" class="w-50 mx-auto event-info">
+                    <div class="mb-3 mt-3">
+                        <label for="UserImg" class="form-label position-relative w-100 d-flex mx-auto"
+                            style="width: max-content !important; padding: 10px; border-radius: 50%;">
+                            <img src="/Images/2.jpg" class="rounded-circle" style="width: 128px; height: 128px;" alt="">
+                            <div class="camera">
+                                <i class="fa-solid fa-camera"></i>
+                            </div>
+                        </label>
+                        <input type="file" accept="image/*" class="visually-hidden" id="UserImg">
+                    </div>
+                    <div class="mb-3">
+                        <label for="Name" class="form-label">Họ Tên</label>
+                        <input type="text" class="form-control" id="Name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="Email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="Email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="Phone" class="form-label">Số điện thoại</label>
+                        <input type="email" class="form-control" id="Phone">
+                    </div>
+                    <div class="mb-3">
+                        <button class="btn btn-success w-100">Lưu</button>
+                    </div>
+                </form>
+            </div>
+            <div class="tab-pane justify-content-center flex-column fade" id="UserTicket" role="tabpanel">
+                <div class="w-100 nav-container flex-column">
+                    <h3 class="fw-bold text-center">Vé của tôi</h3>
+                    <hr class="text-white w-100">
+                    <div class="nav-buttons">
+                        <button class="nav-btn" data-status="Tất cả">Tất cả</button>
+                        <button class="nav-btn" data-status="Thành công">Thành công</button>
+                        <button class="nav-btn active" data-status="Đang xử lý">Đang xử lý</button>
+                        <button class="nav-btn" data-status="Đã hủy">Đã hủy</button>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center" id="contentArea">
+                    <div class="ticket-table-container w-100">
+                        <table class="ticket-table">
+                            <thead>
+                                <tr>
+                                    <th>Sự kiện</th>
+                                    <th>Ngày</th>
+                                    <th>Địa điểm</th>
+                                    <th>Trạng thái</th>
+                                    <th>Loại vé</th>
+                                    <th>Mã ghế</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Hội thảo Công Nghệ 2025</td>
+                                    <td>15/08/2025</td>
+                                    <td>Trung tâm Hội nghị TP.HCM</td>
+                                    <td><span class="status status-pending">Đang xử lý</span></td>
+                                    <td>Vip</td>
+                                    <td>G1</td>
+
+                                </tr>
+                                <tr>
+                                    <td>Concert Âm Nhạc</td>
+                                    <td>20/08/2025</td>
+                                    <td>Sân vận động Quốc gia</td>
+                                    <td><span class="status status-success">Thành công</span></td>
+                                    <td>Vip</td>
+                                    <td>N1</td>
+                                </tr>
+                                <tr>
+                                    <td>Triển lãm Sáng Tạo</td>
+                                    <td>25/08/2025</td>
+                                    <td>Trung tâm Triển lãm Hà Nội</td>
+                                    <td><span class="status status-cancelled">Đã hủy</span></td>
+                                    <td>Vip</td>
+                                    <td>A1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Nội dung sẽ được load bằng AJAX -->
+                </div>
+            </div>
+            <div class="tab-pane flex-column justify-content-center fade" id="UserEvent" role="tabpanel">
+                <div class="w-100 nav-container flex-column">
+                    <h3 class="fw-bold text-center">Sự kiện của tôi</h3>
+                    <hr class="text-white w-100">
+                    <div class="nav-buttons">
+                        <button class="nav-btn active" data-status="Tất cả">Tất cả</button>
+                        <button class="nav-btn" data-status="Thành công">Thành công</button>
+                        <button class="nav-btn" data-status="Đang xử lý">Đang xử lý</button>
+                        <button class="nav-btn" data-status="Đã hủy">Bị từ chối</button>
+                    </div>
+                </div>
+                <div class="content" id="EventArea">
+                    <div class="event-card rounded-2 w-100 justify-content-between align-items-center d-flex p-3">
+                        <div class="d-flex justify-content-center">
+                            <img src="/Images/2.jpg" width="150px" alt="">
+                            <div class="text-start mx-5">
+                                <h4 class="fw-bold">Ten Event</h4>
+                                <p>15/8 20:00 - 20/8 20:00</p>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-warning"><i class="fa-solid fa-pen-to-square"></i>Sửa</button>
+                            <button class="btn btn-danger"><i class="fa-solid fa-trash"></i>Xóa</button>
+                        </div>
+                    </div>
+                    <!-- Nội dung sẽ được load bằng AJAX -->
+                </div>
+                <ul class="pagination w-100 justify-content-end" style="padding-right: 50px;">
+                    <li class="page-item"><button class="page-link" onclick="Previous()" id="previous"><i
+                                class="fa-solid fa-chevron-left"></i></button></li>
+                    <li class="page-item"><a class="page-link active" data-page="1" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" data-page="2" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" data-page="3" href="#">3</a></li>
+                    <li class="page-item"><button class="page-link" onclick="Next()" id="next"><i
+                                class="fa-solid fa-chevron-right"></i></button></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="/js/UserProfile.js"></script>
+}

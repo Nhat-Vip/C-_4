@@ -1,0 +1,174 @@
+@section Styles{
+    <style>
+        .ticket-container .card {
+            min-height: 100vh;
+        }
+
+        body {
+            background-color: black;
+        }
+
+        .ticket-container {
+            padding: 0;
+        }
+
+        .ticket-container .card-header {
+            color: white;
+            background-color: rgb(38, 38, 41);
+        }
+
+        .ticket-container .card-body {
+            color: white;
+            background-color: rgb(56, 56, 61);
+        }
+
+        .ticket-container .card-footer {
+            background-color: rgb(38, 38, 41);
+            padding: 20px;
+            padding-top: 30px;
+        }
+
+        .status-icon {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: var(--status);
+        }
+
+        .return {
+            position: absolute;
+            top: 10px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .return:hover {
+            color: rgb(19, 92, 188);
+        }
+
+        .showTicket {
+            position: absolute;
+            right: 0;
+            top: 10px;
+            width: max-content;
+        }
+    </style>
+}
+<div class="container-fluid">
+    <div class="row position-relative">
+        <div class="seat-container col-12 col-lg-8">
+            <h4 class="return"><i class="fa-solid fa-arrow-left"></i>Trở về</h4>
+            <h5 class="text-center text-white mt-5">Chọn vé</h5>
+            <div class="d-flex w-75 mx-auto justify-content-between">
+                <div class="d-flex text-white align-items-baseline">
+                    <div class="status-icon me-3" style="--status:white"></div>
+                    <p>Đang trống</p>
+                </div>
+                <div class="d-flex text-white align-items-baseline">
+                    <div class="status-icon me-3" style="--status:green"></div>
+                    <p>Đang chọn</p>
+                </div>
+                <div class="d-flex text-white align-items-baseline">
+                    <div class="status-icon me-3" style="--status:red"></div>
+                    <p>Không chọn được</p>
+                </div>
+            </div>
+
+            <div class="seat-content">
+
+            </div>
+        </div>
+
+        <div class="ticket-container d-none d-lg-block col-4">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Hài Kịch: Tung Hoành Pattaya</div>
+                </div>
+                <div class="card-body" style="font-size: 12px; font-weight: 600">
+                    <div class="card-text">
+                        <p class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-calendar"></i>20:00 - 23:00,
+                            10 tháng 08, 2025</p>
+                        <p class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-location-dot"></i>Nhà Văn
+                            Hóa Thanh Niên Hồ Chí Minh
+                            Số 4 Phạm Ngọc Thạch, Phường Bến Nghé, Quận 1, Thành Phố Hồ Chí Minh</p>
+                    </div>
+                    <hr>
+                    <div class="card-text">
+                        <h6>Giá Vé</h6>
+                        <div class="d-flex flex-wrap mb-3 justify-content-between">
+                            <div class="input-group w-75">
+                                <input type="color" id="" class="disabled me-1" readonly>
+                                <span>Hạng VIP (không dành cho trẻ em dưới 16t)</span>
+                            </div>
+                            <span class="text-success">300.000 đ</span>
+                        </div>
+                        <div class="d-flex flex-wrap  justify-content-between">
+                            <div class="input-group w-75">
+                                <input type="color" id="" class="disabled me-1" readonly>
+                                <span>Hạng VIP (không dành cho trẻ em dưới 16t)</span>
+                            </div>
+                            <span class="text-success">300.000 đ</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-success w-100">Mua vé</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nut mo menu -->
+        <button class="btn showTicket btn-outline-light d-lg-none mb-2" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#ticketOffcanvas">
+            <i class="fa-solid fa-ticket"></i> Xem vé
+        </button>
+
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="ticketOffcanvas">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title">Thông tin vé</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body p-0">
+                <div class="ticket-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Hài Kịch: Tung Hoành Pattaya</div>
+                        </div>
+                        <div class="card-body" style="font-size: 12px; font-weight: 600">
+                            <div class="card-text">
+                                <p class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-calendar"></i>20:00
+                                    - 23:00, 10 tháng
+                                    08, 2025</p>
+                                <p class="mb-4" style="font-weight: 600;"><i
+                                        class="fa-solid fa-location-dot"></i>Nhà Văn Hóa Thanh Niên
+                                    Hồ Chí Minh
+                                    Số 4 Phạm Ngọc Thạch, Phường Bến Nghé, Quận 1, Thành Phố Hồ Chí Minh</p>
+                            </div>
+                            <hr>
+                            <div class="card-text">
+                                <h6>Giá Vé</h6>
+                                <div class="d-flex flex-wrap mb-3 justify-content-between">
+                                    <div class="input-group w-75">
+                                        <input type="color" id="" class="disabled me-1" readonly>
+                                        <span>Hạng VIP (không dành cho trẻ em dưới 16t)</span>
+                                    </div>
+                                    <span class="text-success">300.000 đ</span>
+                                </div>
+                                <div class="d-flex flex-wrap  justify-content-between">
+                                    <div class="input-group w-75">
+                                        <input type="color" id="" class="disabled me-1" readonly>
+                                        <span>Hạng VIP (không dành cho trẻ em dưới 16t)</span>
+                                    </div>
+                                    <span class="text-success">300.000 đ</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-success w-100">Mua vé</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

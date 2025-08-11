@@ -13,7 +13,6 @@ public class User
     [Required]
     public string? PassWord { set; get; }
     public List<Ticket> Tickets { set; get; } = new();
-    public List<SeatingChart> SeatingCharts { set; get; } = new();
     public List<Event> Events { set; get; } = new();
 }
 public enum Role
