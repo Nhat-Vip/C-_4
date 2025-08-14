@@ -1,7 +1,22 @@
 @section Styles{
     <link rel="stylesheet" href="/css/userProfile.css">
 }
+@model User
 <div class="container-fluid">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if(TempData["Success"] != null){
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <div class="row">
         <ul class="nav nav-tabs col-12 h-full col-lg-2 flex-row flex-lg-column userInfoMenu">
             <li class="nav-item mb-4">
@@ -13,7 +28,7 @@
                     tôi</button>
             </li>
             <li class="nav-item mb-4">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#UserEvent" id="tab1" role="tab">Sự kiện
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#UserEvent" id="tab1" role="tab" onclick="LoadEvents('ALL')">Sự kiện
                     của tôi</button>
             </li>
         </ul>
@@ -21,31 +36,40 @@
             <div class="tab-pane show flex-column justify-content-center fade active" id="UserInfo" role="tabpanel">
                 <h3 class="text-center fw-bold text-white">Thông tin tài khoản</h3>
                 <hr class="text-white">
-                <form action="" onsubmit=" return CheckMail()" class="w-50 mx-auto event-info">
+                <form asp-action="UpdateProfile" enctype="multipart/form-data" onsubmit=" return CheckMail()" class="w-50 mx-auto event-info">
+                    <input type="hidden" asp-for="UserId">
                     <div class="mb-3 mt-3">
                         <label for="UserImg" class="form-label position-relative w-100 d-flex mx-auto"
                             style="width: max-content !important; padding: 10px; border-radius: 50%;">
-                            <img src="/Images/2.jpg" class="rounded-circle" style="width: 128px; height: 128px;" alt="">
+                            <img src=@(Model.Avatar??"/Images/2.jpg") id="Avatar" class="rounded-circle" style="width: 128px; height: 128px;" alt="">
                             <div class="camera">
                                 <i class="fa-solid fa-camera"></i>
                             </div>
                         </label>
-                        <input type="file" accept="image/*" class="visually-hidden" id="UserImg">
+                        <input type="file" accept="image/*" name="UserImg" class="visually-hidden" onchange="PreviewAvt(this)" id="UserImg">
                     </div>
                     <div class="mb-3">
-                        <label for="Name" class="form-label">Họ Tên</label>
-                        <input type="text" class="form-control" id="Name">
+                        <label asp-for="UserName" class="form-label">Họ Tên</label>
+                        <input type="text" class="form-control" asp-for="UserName">
                     </div>
                     <div class="mb-3">
-                        <label for="Email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="Email">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input type="email" class="form-control" asp-for="Email" required>
+                        <span asp-validation-for="Email"></span>
                     </div>
                     <div class="mb-3">
-                        <label for="Phone" class="form-label">Số điện thoại</label>
-                        <input type="email" class="form-control" id="Phone">
+                        <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" asp-for="PhoneNumber" onchange="CheckPhoneNumber(this)">
+                        <span asp-validation-for="PhoneNumber"></span>
                     </div>
                     <div class="mb-3">
-                        <button class="btn btn-success w-100">Lưu</button>
+                        <label asp-for="PassWord" class="form-label">Mật khẩu mới</label>
+                        <input type="password" class="form-control" asp-for="PassWord">
+                        <span asp-validation-for="PassWord"></span>
+
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-success w-100">Lưu</button>
                     </div>
                 </form>
             </div>
@@ -53,14 +77,14 @@
                 <div class="w-100 nav-container flex-column">
                     <h3 class="fw-bold text-center">Vé của tôi</h3>
                     <hr class="text-white w-100">
-                    <div class="nav-buttons">
-                        <button class="nav-btn" data-status="Tất cả">Tất cả</button>
-                        <button class="nav-btn" data-status="Thành công">Thành công</button>
-                        <button class="nav-btn active" data-status="Đang xử lý">Đang xử lý</button>
-                        <button class="nav-btn" data-status="Đã hủy">Đã hủy</button>
+                    <div class="nav-buttons" id="TicketMenu">
+                        <button class="nav-btn" data-status="All">Tất cả</button>
+                        <button class="nav-btn" data-status="Success">Thành công</button>
+                        <button class="nav-btn active" data-status="Processing">Đang xử lý</button>
+                        <button class="nav-btn" data-status="Cancel">Đã hủy</button>
                     </div>
                 </div>
-                <div class="d-flex justify-content-center" id="contentArea">
+                <div class="d-flex justify-content-center" id="TicketArea">
                     <div class="ticket-table-container w-100">
                         <table class="ticket-table">
                             <thead>
@@ -69,19 +93,19 @@
                                     <th>Ngày</th>
                                     <th>Địa điểm</th>
                                     <th>Trạng thái</th>
-                                    <th>Loại vé</th>
-                                    <th>Mã ghế</th>
+                                    <th>Số lượng</th>
+                                    <th>Tổng tiền</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
+                            <tbody id="ticketTableBody">
+                                <!-- Dữ liệu sẽ được tải bằng lazy loading -->
+                                @* <tr>
                                     <td>Hội thảo Công Nghệ 2025</td>
                                     <td>15/08/2025</td>
                                     <td>Trung tâm Hội nghị TP.HCM</td>
                                     <td><span class="status status-pending">Đang xử lý</span></td>
                                     <td>Vip</td>
                                     <td>G1</td>
-
                                 </tr>
                                 <tr>
                                     <td>Concert Âm Nhạc</td>
@@ -98,26 +122,26 @@
                                     <td><span class="status status-cancelled">Đã hủy</span></td>
                                     <td>Vip</td>
                                     <td>A1</td>
-                                </tr>
+                                </tr> *@
                             </tbody>
                         </table>
+                        <div class="loader" id="loader">Đang tải thêm vé...</div>
                     </div>
-                    <!-- Nội dung sẽ được load bằng AJAX -->
                 </div>
             </div>
             <div class="tab-pane flex-column justify-content-center fade" id="UserEvent" role="tabpanel">
                 <div class="w-100 nav-container flex-column">
                     <h3 class="fw-bold text-center">Sự kiện của tôi</h3>
                     <hr class="text-white w-100">
-                    <div class="nav-buttons">
-                        <button class="nav-btn active" data-status="Tất cả">Tất cả</button>
-                        <button class="nav-btn" data-status="Thành công">Thành công</button>
-                        <button class="nav-btn" data-status="Đang xử lý">Đang xử lý</button>
-                        <button class="nav-btn" data-status="Đã hủy">Bị từ chối</button>
+                    <div class="nav-buttons" id="EventMenu">
+                        <button class="nav-btn active" data-status="ALL">Tất cả</button>
+                        <button class="nav-btn" data-status="Approved">Đã được duyệt</button>
+                        <button class="nav-btn" data-status="Pending">Đang xử lý</button>
+                        <button class="nav-btn" data-status="Cancel">Bị từ chối</button>
                     </div>
                 </div>
                 <div class="content" id="EventArea">
-                    <div class="event-card rounded-2 w-100 justify-content-between align-items-center d-flex p-3">
+                    <div class="event-card rounded-2 w-100 justify-content-between align-items-center d-flex p-2">
                         <div class="d-flex justify-content-center">
                             <img src="/Images/2.jpg" width="150px" alt="">
                             <div class="text-start mx-5">
@@ -132,15 +156,39 @@
                     </div>
                     <!-- Nội dung sẽ được load bằng AJAX -->
                 </div>
-                <ul class="pagination w-100 justify-content-end" style="padding-right: 50px;">
-                    <li class="page-item"><button class="page-link" onclick="Previous()" id="previous"><i
+                <ul class="pagination w-100 justify-content-end" id="EventPagination" style="padding-right: 50px;">
+                    @* <li class="page-item"><button class="page-link" onclick="Previous()" id="previous"><i
                                 class="fa-solid fa-chevron-left"></i></button></li>
                     <li class="page-item"><a class="page-link active" data-page="1" href="#">1</a></li>
                     <li class="page-item"><a class="page-link" data-page="2" href="#">2</a></li>
                     <li class="page-item"><a class="page-link" data-page="3" href="#">3</a></li>
                     <li class="page-item"><button class="page-link" onclick="Next()" id="next"><i
-                                class="fa-solid fa-chevron-right"></i></button></li>
+                                class="fa-solid fa-chevron-right"></i></button></li> *@
                 </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="ticketModal" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ticketModalLabel">Chi tiết vé</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Sự kiện:</strong> <span id="modalEvent"></span></p>
+                <p><strong>Ngày:</strong> <span id="modalDate"></span></p>
+                <p><strong>Địa điểm:</strong> <span id="modalLocation"></span></p>
+                <p><strong>Trạng thái:</strong> <span id="modalStatus"></span></p>
+                <p><strong>Loại vé:</strong> <span id="modalTicketType"></span></p>
+                <p><strong>Mã ghế:</strong> <span id="modalSeatCode"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>

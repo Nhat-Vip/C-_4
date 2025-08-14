@@ -14,14 +14,13 @@ public class Event
     public DateTime EndDateTime { set; get; }
     public EventType EventType { set; get; }
     public EventStatus EventStatus { set; get; }
-    public int? SeatingChartId { set; get; }
-    public string? SoNganHang { set; get; }
-    public SeatingChart SeatingChart { set; get; } = null!;
+    public string? BankNumber { set; get; }
+    public string? BankName { set; get; }
+    public SeatingChart? SeatingChart { set; get; }
     public int? UserId { set; get; }
     public User? User { set; get; }
     public List<Ticket> Tickets { set; get; } = new();
     public List<ShowTime> ShowTimes { set; get; } = new();
-
 }
 public enum EventType
 {
@@ -31,6 +30,7 @@ public enum EventType
 public enum EventStatus
 {
     Pending,
+    Draft,
     Approved,
     Past,
     Upcoming,
@@ -46,6 +46,7 @@ public static class EnumExtension
             EventStatus.Pending => "Đang chờ xử lý",
             EventStatus.Approved => "Đã duyệt",
             EventStatus.Past => "Đã qua",
+            EventStatus.Draft => "Nháp",
             EventStatus.Upcoming => "Sắp tới",
             EventStatus.Cancel => "Bị từ chối",
             _ => "Khong biet"

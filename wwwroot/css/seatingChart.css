@@ -10,33 +10,19 @@
         border: 1px solid #ccc;
         display: flex;
         justify-content: center;
-        /* align-items: center; */
-        /* overflow: auto; */
-        /* background-image: linear-gradient(to right, #dfc7c7 1px, transparent 1px),
-            linear-gradient(to bottom, #dfc7c7 1px, transparent 1px);
-        background-size: 25px 25px; */
-        /* overflow: hidden; */
-        /* overflow: scroll; */
-        /* transform: translate(-50%, -50%); Center mặc định */
         transition: transform 0s;
-        /* Không animate khi kéo */
 
 
     }
 
-    /* #seat-container::-webkit-scrollbar{
-        display: none;
-    } */
-
     .seat-group {
         box-sizing: border-box;
         position: absolute;
-        width: calc(var(--cols) * 30px);
-        height: calc(var(--rows) * 30px);
+        width: calc(var(--cols) * 40px);
+        height: calc(var(--rows) * 40px);
         background-color: var(--bg);
         transform-origin: top left;
         z-index: 1;
-        /* transform: scale(calc (min(calc (800px / calc(var(--cols) * 30px)), calc( 80vh / calc(var(--rows) * 40px))) / 2)); */
     }
 
     .seat-group:hover {
@@ -44,11 +30,10 @@
     }
 
     .seat-group-body {
-        top: calc((calc(var(--rows) * 30px) - calc(var(--rows) * 25px - 12px)) / 2);
-        left: calc((calc(var(--cols) * 30px) - calc(var(--cols) * 25px - 12px)) / 2);
+        top: calc((calc(var(--rows) * 40px) - calc(var(--rows) * 25px - 10px)) / 2);
+        left: calc((calc(var(--cols) * 40px) - calc(var(--cols) * 25px - 10px)) / 2);
         width: calc(var(--cols) * 25px - 10px);
         height: calc(var(--rows) * 25px - 10px);
-        /* background-color: aqua; */
         position: relative;
     }
 
@@ -59,15 +44,14 @@
         box-sizing: unset;
         display: block;
         place-content: center;
-        font-size: 5rem;
+        font-size: calc(calc(var(--cols) * 25px - 10px) / 2);
         font-weight: 800;
         text-align: center;
         padding: 5px;
-        width: calc(var(--cols) * 25px);
-        height: calc(var(--rows) * 25px);
+        width: calc(var(--cols) * 25px - 5px);
+        height: calc(var(--rows) * 25px - 5px);
         background-color: var(--bg);
         z-index: 10;
-        /* cao hơn seat */
     }
 
     .seat {
@@ -77,10 +61,7 @@
         height: 15px;
         background-color: white;
         color: black;
-        /* margin-top: 5px;
-        margin-left: 5px; */
         text-align: center;
-        /* line-height: 20px; */
         position: absolute;
         border-radius: 50%;
         user-select: none;
@@ -97,7 +78,6 @@
         padding: 10px;
         border-radius: 5px;
         box-shadow: 0 0 2px black;
-        /* width: 30vw; */
         z-index: 2;
         position: absolute;
         top: 10px;
@@ -118,7 +98,6 @@
         width: 100vw;
         height: 100vh;
         overflow: hidden;
-        /* Camera dạng scrollable */
         background: #c0a9a9;
         cursor: grab;
     }

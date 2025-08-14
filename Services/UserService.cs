@@ -101,13 +101,22 @@ public class UserService : IUserService
     {
         try
         {
-            _context.Users.Update(user);
+            var us = _context.Users.FirstOrDefault(u => u.UserId == user.UserId);
+            if (us == null) return false;
+            us.PassWord = user.PassWord ?? us.PassWord;
+
+            us.UserName = user.UserName;
+            us.Email = user.Email;
+            us.PhoneNumber = user.PhoneNumber;
+            us.Avatar = user.Avatar ?? us.Avatar;
+
             await _context.SaveChangesAsync();
             return true;
         }
         catch (DbUpdateException ex)
         {
             Console.WriteLine("Loi DB: " + ex.Message);
+            Console.WriteLine("Chi tiet: " + ex);
             return false;
         }
         catch (Exception ex)

@@ -18,11 +18,15 @@ public class SeatingchartService : ISeatingChartService
         catch (DbUpdateException ex)
         {
             Console.WriteLine("Loi DB: " + ex.Message);
+            Console.WriteLine("Chi tiet loi: " + ex.InnerException?.Message);
+            Console.WriteLine("Full loi: " + ex.ToString());
             return false;
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Loi Khac:" + ex.Message);
+            Console.WriteLine("Lỗi khác:");
+            Console.WriteLine("Message: " + ex.Message);
+            Console.WriteLine("StackTrace: " + ex.StackTrace);
             return false;
         }
     }

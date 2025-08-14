@@ -99,23 +99,25 @@
     </style>
 }
     <div class="container-fluid p-0 mt-0">
+        <input type="hidden" id="UserId" value="@ViewBag.UserId">
+        <input type="hidden" id="eventId">
         <div class="d-flex w-100 p-3 justify-content-between" style="background-color: rgb(54, 58, 54); width: 100vw;">
             <ul class="nav nav-tabs"  id="CreateEventMenu" role="tablist">
                 <li class="nav-item">
                     <button class="nav-link active" data-bs-toggle="tab" 
-                    data-bs-target="#EventInfo" id="tab1" role="tab">Thông tin sự kiện</button>
+                    data-bs-target="#EventInfo" id="tab1" role="tab" onclick="SetTabIndex(0)">Thông tin sự kiện</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" 
-                    data-bs-target="#EventSeatingChart" id="tab2" role="tab">Sơ đồ ghế</button>
+                    <button class="nav-link disabled" data-bs-toggle="tab" data-bs-target="#EventSeatingChart" id="tab2"
+                    role="tab" onclick="SetTabIndex(1)">Sơ đồ ghế</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" 
-                    data-bs-target="#EventTicket" id="tab3" role="tab">Thời gian & loại vé</button>
+                    <button class="nav-link disabled" data-bs-toggle="tab" data-bs-target="#EventTicket" id="tab3"
+                    role="tab" onclick="SetTabIndex(2)">Thời gian & loại vé</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" 
-                    data-bs-target="#EventPayment" id="tab4" role="tab">Thông tin thanh toán</button>
+                    <button class="nav-link disabled" data-bs-toggle="tab" data-bs-target="#EventPayment" id="tab4"
+                    role="tab" onclick="SetTabIndex(3)">Thông tin thanh toán</button>
                 </li>
             </ul>
             <div class="d-flex justify-content-end align-items-center">
@@ -126,64 +128,56 @@
         
         <div class="tab-content mt-3" id="tabContent">
             <div class="tab-pane show d-flex justify-content-center fade active" id="EventInfo" role="tabpanel">
-                <form action="" class="w-75 event-info">
+                <form id="EventInfo" class="w-75 event-info">
                     <div class="mt-3 mb-3">
-                        <label for="name" class="form-label">Tên sự kiện</label>
-                        <input type="text" class="form-control" id="name">
+                        <label for="EventName" class="form-label">Tên sự kiện</label>
+                        <input type="text" class="form-control" id="EventName" name="eventName" required>
+                        <span class="text-danger"></span>
                     </div>
                     <div class="mb-3">
-                        <label for="eventImage" class="form-label">Chọn ảnh sự kiện</label>
-                        <input type="file" accept="image/*" id="eventImage" onchange="PreviewImg(this)" class="form-control" id="name">
+                        <label for="EventImage" class="form-label">Chọn ảnh sự kiện</label>
+                        <input type="file" accept="image/*" id="EventImage" onchange="PreviewImg(this)" class="form-control" name="img" required>
+                        <span class="text-danger"></span>
                         <div class=" mt-3 justify-content-center" style="height: auto; width: max-content;">
                             <img src="" class="w-100 p-4" id="preview" alt="Xem trước ảnh" style=" display: none; max-width: 520px;">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="address" class="form-label">Địa chỉ sự kiện</label>
-                        <input type="text" class="form-control" id="address">
+                        <label for="EventAddress" class="form-label">Địa chỉ sự kiện</label>
+                        <input type="text" class="form-control" id="EventAddress" name="eventAddress" required>
+                        <span class="text-danger"></span>
+
                     </div>
                     <div class="mb-3 d-flex justify-content-between">
                         <div class="w-100 me-3">
-                            <label for="startDate" class="form-label">Ngày bắt đầu sự kiện</label>
-                            <input type="datetime-local" id="startDate" class="form-control">
+                            <label for="StartEvent" class="form-label">Ngày bắt đầu sự kiện</label>
+                            <input type="datetime-local" id="StartEvent" class="form-control" name="startEvent" required>
+                            <span class="text-danger"></span>
+
                         </div>
                         <div class="w-100">
-                            <label for="endDate" class="form-label">Ngày kết thúc sự kiện</label>
-                            <input type="datetime-local" id="endDate" class="form-control">
+                            <label for="EndEvent" class="form-label">Ngày kết thúc sự kiện</label>
+                            <input type="datetime-local" id="EndEvent" class="form-control" name="endEvent" required>
+                            <span class="text-danger"></span>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="eventType" class="form-label">Thể loại</label>
-                        <select id="eventType" class="form-select">
+                        <label for="EventType" class="form-label">Thể loại</label>
+                        <select id="EventType" class="form-select">
                             <option value="Concert">Concert</option>
                             <option value="Sport">Sport</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="Description" class="form-label">Thông tin sự kiện</label>
-                        <textarea id="Description" class="form-control" style="height: 100px;"></textarea>
+                        <textarea id="Description" class="form-control" style="height: 100px;" name="description" required></textarea>
+                        <span class="text-danger"></span>
                     </div>
                 </form>
             </div>
             <div class="tab-pane d-flex justify-content-center fade" id="EventSeatingChart" role="tabpanel">
                 <div class="w-100" style="position: relative; height: 100vh;">
                     <div class="setting w-25 d-flex flex-column">
-                        <div class="card mb-3">
-                            <div class="card-heade">
-                                <a class="btn text-center w-100 dropdown-toggle" data-bs-toggle="collapse" href="#seating-chart">
-                                    Tên sơ đồ ghế
-                                </a>
-                            </div>
-                            <div id="seating-chart" class="collapse" data-bs-parent="#accordian">
-                                <div class="card-body">
-                                    <div class="mt-3 mb-3">
-                                        <label class="form-label" for="seating-chartName">
-                                            <input type="text" id="seating-chartName" placeholder="Nhập tên sơ đồ ghế" class="form-control">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    
                         <h3>Nhập số hàng và cột:</h3>
                         <input type="text" class="mt-3 mb-3 form-control" id="seat-name" placeholder="Name">
                         <div class="input-group mb-3">
@@ -210,13 +204,10 @@
                         <div id="seat-container" class="col-9">
                             <div id="seat-content" class="seat-content">
                                 <!-- <div id="test" class="seat-group">
-                                                                                    <div class="seat" style="left: 0px; right: 0px;">TESTTT</div>
-                                                                                </div> -->
+                                        <div class="seat" style="left: 0px; right: 0px;">TESTTT</div>
+                                    </div> -->
                             </div>
                         </div>
-                    </div>
-                    <div class="btn-SeatingSave">
-                        <button class="btn btn-success">Lưu sơ đồ ghế</button>
                     </div>
                 </div>
             </div>
@@ -225,30 +216,25 @@
                     <div id="ShowTime" class="w-75">
                         <h4 class="fw-bold text-white">Thời gian sự kiện</h4>
                         <div class="card mb-3">
-                            <div class="card-header d-flex justify-content-between">
+                            <div class="card-header d-flex justify-content-between align-items-center">
                                 <a href="#ShowTime1" class="btn w-75 text-start" data-bs-toggle="collapse" >Vui lòng nhập thông tin xuất chiếu</a>
-                                <button type="button" class=" btn btn-danger">Xóa</button>
+                                <button type="button" class=" btn btn-danger" style="height: max-content;">Xóa</button>
                             </div>
                             <div class="collapse show" id="ShowTime1" data-bs-parent="#ShowTime">
                                 <div class="card-body"  >
                                     <div class="d-flex">
                                         <div class="mb-3 w-100 me-3 mt-3">
                                             <label for="showTimeStart" class="form-label" >Thời gian bắt đầu</label>
-                                            <input type="datetime-local" id="showTimeStart" onchange="ShowTimeStart(this,'ShowTime1')" class="form-control">
+                                        <input type="datetime-local" id="showTimeStart"
+                                            onchange="ShowTimeStart(this,'ShowTime1')" class="form-control" required>
                                         </div>
                                         <div class="mb-5 w-100 mt-3">
                                             <label for="showTimeEnd" class="form-label">Thời gian kết thúc</label>
-                                            <input type="datetime-local" id="showTimeEnd" onchange="ShowTimeEnd(this,'ShowTime1')" class="form-control">
+                                        <input type="datetime-local" id="showTimeEnd" class="form-control" onchange="ChangeEndTime(this)" required>
+                                        <span class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="mb-3" id="TicketGroupContainer">
-                                        <div class="d-flex mb-3 justify-content-between align-items-center p-2 rounded-3" style="box-shadow: 0 0 5px black;">
-                                            <p class="text-black fw-bold m-0"><i class="fa-solid fa-ticket"></i>Ten ve</p>
-                                            <div>
-                                                <button class="btn btn-warning">Sua</button>
-                                                <button class="btn btn-danger">Xoa</button>
-                                            </div>
-                                        </div>
                                     </div>
                                     <div class="mb-3">
                                         <button class="btn-showTime fw-bold" onclick="openAddModal('ShowTime1')">Thêm loại vé</button>
@@ -256,7 +242,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
                 <div class="mb-3 w-100 mt-5 d-flex justify-content-center">
@@ -268,15 +253,16 @@
                 <form action="" class="w-75 event-info">
                     <div class="mt-3 mb-3">
                         <label for="BankAccount" class="form-label">Tên tài khoản</label>
-                        <input type="text" class="form-control" id="BankName">
+                    <input type="text" class="form-control" id="BankAccount" required>
                     </div>
                     <div class="mb-3">
                         <label for="BankNumber" class="form-label">Số tài khoản</label>
-                        <input type="text" class="form-control" id="BankNumber">
+                    <input type="text" class="form-control" id="BankNumber"
+                        oninput="this.value = this.value.replace(/[^0-9]/g,'')" required>
                     </div>
                     <div class="mb-3">
                         <label for="BankName" class="form-label">Tên ngân hàng</label>
-                        <input type="text" id="BankName" class="form-control">
+                    <input type="text" id="BankName" class="form-control" required>
                     </div>
                 </form>
             </div>
@@ -292,168 +278,53 @@
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" value="" id="IdShowTime">
-                    <div class="mb-4 mt-3">
-                        <label for="ticketName" class="form-label">Tên vé</label>
-                        <input type="text" id="ticketName" class="form-control">
-                    </div>
-                    <div class="row mb-4">
-                        <div class="col-4">
-                            <label for="Price" class="form-label">Giá vé</label>
-                            <input type="text" id="Price" class="form-control">
+                    <form action="" onsubmit="saveTicket(event)">
+                        <input type="hidden" value="" id="IdShowTime">
+                        <div class="mb-4 mt-3">
+                            <label for="ticketName" class="form-label">Tên vé</label>
+                            <input type="text" id="ticketName" class="form-control" name="tkName" required>
+                        <div class="invalid-feedback">Vui lòng nhập tên vé !</div>
                         </div>
-                        <div class="col-4">
-                            <label for="SeatGroup" class="form-label">Chọn nhóm ghế</label>
-                            <select id="SeatGroup" class="form-select">
-                                <option value="A">Nhóm A</option>
-                                <option value="B">Nhóm B</option>
-                                <option value="C">Nhóm C</option>
-                            </select>
+                        <div class="row mb-4">
+                            <div class="col-4">
+                                <label for="Price" class="form-label">Giá vé</label>
+                            <input type="text" id="Price" class="form-control" name="price" value="0" oninput="CheckNumber(this)" required>
+                            <div class="invalid-feedback">Vui lòng nhập giá vé</div>
+                            </div>
+                            <div class="col-4" id="dropdown-seatGroup">
+                            </div>
+                            <div class="col-4">
+                                <label for="MaxTicket" class="form-label">Giới hạn số lượng vé trong 1 lần mua</label>
+                            <input type="number" id="MaxTicket" value="10" min="1" step="1" class="form-control"
+                                name="maxTicket" required>
+                            <div class="invalid-feedback">Vui lòng nhập số lượng vé tối đa có thể mua</div>
+                            </div>
                         </div>
-                        <div class="col-4">
-                            <label for="MaxTicket" class="form-label">Giới hạn số lượng vé trong 1 lần mua</label>
-                            <input type="text" id="MaxTicket" class="form-control">
+                        <div class="d-flex mb-4">
+                            <div class="w-100 me-3">
+                                <label for="TicketSaleStart" class="form-label">Thời gian bắt đầu bán vé</label>
+                            <input type="datetime-local" id="TicketSaleStart" value="@DateTime.Now" name="startTime" class="form-control"
+                                required>
+                                <span class="text-danger"></span>
+                            <div class="invalid-feedback">Vui lòng nhập thời gian bán vé</div>
+                            </div>
+                            <div class="w-100">
+                                <label for="TicketSaleEnd" class="form-label">Thời gian kết thúc bán vé</label>
+                            <input type="datetime-local" id="TicketSaleEnd" class="form-control" name="endTime" required>
+                            <span class="text-danger"></span>
+                            <div class="invalid-feedback">Vui Lòng nhập thời gian kết thúc bán vé</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="d-flex mb-4">
-                        <div class="w-100 me-3">
-                            <label for="TicketSaleStart" class="form-label">Thời gian bắt đầu bán vé</label>
-                            <input type="datetime-local" id="TicketSaleStart" class="form-control">
+                        <div class="mb-3">
+                            <button type="submit" class="btn w-100 btn-success fw-bold">Lưu</button>
                         </div>
-                        <div class="w-100">
-                            <label for="TicketSaleEnd" class="form-label">Thời gian kết thúc bán vé</label>
-                            <input type="datetime-local" id="TicketSaleEnd" class="form-control">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <button type="button" class="btn w-100 btn-success fw-bold" onclick="saveTicket()" data-bs-dismiss="modal">Lưu</button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 @section Scripts{
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/SeatingChart.js"></script>
-    <script>
-        var TabControl = ['[data-bs-target="#EventInfo"]', '[data-bs-target="#EventSeatingChart"]', '[data-bs-target="#EventTicket"]', '[data-bs-target="#EventPayment"]']
-        var tabIndex = 0;
-        var showTime = [{ShowTime:1,ticketGroup:0}];
-        var ticketGroup = [];
-
-        const Next = () =>{
-            tabIndex = (tabIndex + 1) % 4;
-            const tabTrigger = document.querySelector(`${TabControl[tabIndex]}`);
-            console.log(TabControl[tabIndex]);
-            console.log(tabTrigger);
-            const tab = new bootstrap.Tab(tabTrigger);
-            tab.show();
-        }
-
-        const openAddModal = (id) =>{
-            const modalElement = document.getElementById('CreateTicket');
-            const modal = new bootstrap.Modal(modalElement);
-            document.getElementById("IdShowTime").value = id;
-            console.log("Modal: ",id);
-            modal.show();
-        }
-        const saveTicket = () =>{
-            const id = document.getElementById("IdShowTime").value;
-            const tkName = document.getElementById("ticketName").value;
-            const price = document.getElementById("Price").value;
-            const seatGruop = document.getElementById("SeatGroup").value;
-            const maxTicket = document.getElementById("MaxTicket").value;
-            const startTime = document.getElementById("TicketSaleStart").value;
-            const endTime = document.getElementById("TicketSaleEnd").value;
-
-
-            const ticketIndex = showTime.find(s=>s.ShowTime == id.replace("ShowTime",''));
-
-            const container = document.querySelector(`#${id} #TicketGroupContainer`);
-            // console.log(container);
-            const ticketHtml = `
-                <div class="d-flex mb-3 justify-content-between align-items-center p-2 rounded-3" style="box-shadow: 0 0 5px black;">
-                    <p class="text-black fw-bold m-0"><i class="fa-solid fa-ticket"></i>${tkName}</p>
-                    <div>
-                        <button class="btn btn-warning">Sua</button>
-                        <button class="btn btn-danger">Xoa</button>
-                    </div>
-                    <input type="hidden" name="ShowTimeTicketGroups[${ticketIndex.ticketGroup}].ProductName" value="${tkName}" />
-                    <input type="hidden" name="ShowTimeTicketGroups[${ticketIndex.ticketGroup}].ProductName" value="${price}" />
-                    <input type="hidden" name="ShowTimeTicketGroups[${ticketIndex.ticketGroup}].ProductName" value="${seatGruop}" />
-                    <input type="hidden" name="ShowTimeTicketGroups[${ticketIndex.ticketGroup}].ProductName" value="${maxTicket}" />
-                    <input type="hidden" name="ShowTimeTicketGroups[${ticketIndex.ticketGroup}].ProductName" value="${startTime}" />
-                    <input type="hidden" name="ShowTimeTicketGroups[${ticketIndex.ticketGroup}].ProductName" value="${endTime}" />
-                </div>
-            `
-
-            container.insertAdjacentHTML("beforeend", ticketHtml);
-            ticketIndex.ticketGroup++;
-        }
-
-        const AddShowTime = () =>{
-            const container = document.getElementById("ShowTime");
-            const index = showTime.length + 1;
-            const showTimeHtml = 
-            `
-                <div class="card mb-3">
-                    <div class="card-header d-flex justify-content-between">
-                        <a href="#ShowTime${index}" class="btn w-75 text-start" data-bs-toggle="collapse" >Vui lòng nhập thông tin xuất chiếu</a>
-                        <button type="button" class=" btn btn-danger">Xóa</button>
-                    </div>
-                    <div class="collapse" id="ShowTime${index}" data-bs-parent="#ShowTime">
-                        <div class="card-body">
-                            <div class="d-flex">
-                                <div class="mb-3 w-100 me-3 mt-3">
-                                    <label for="showTimeStart" class="form-label" >Thời gian bắt đầu</label>
-                                    <input type="datetime-local" id="showTimeStart" onchange="ShowTimeStart(this,'ShowTime${index}')" class="form-control">
-                                </div>
-                                <div class="mb-5 w-100 mt-3">
-                                    <label for="showTimeEnd" class="form-label">Thời gian kết thúc</label>
-                                    <input type="datetime-local" id="showTimeEnd" onchange="ShowTimeEnd(this,'ShowTime${index}')" class="form-control">
-                                </div>
-                            </div>
-                            <div class="mb-3" id="TicketGroupContainer">
-                                <div class="d-flex mb-3 justify-content-between align-items-center p-2 rounded-3" style="box-shadow: 0 0 5px black;">
-                                    <p class="text-black fw-bold m-0"><i class="fa-solid fa-ticket"></i>Ten ve</p>
-                                    <div>
-                                        <button class="btn btn-warning">Sua</button>
-                                        <button class="btn btn-danger">Xoa</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <button class="btn-showTime fw-bold" onclick="openAddModal('ShowTime${index}')">Thêm loại vé</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `
-
-            container.insertAdjacentHTML("beforeend",showTimeHtml);
-
-            showTime.push({ShowTime:index,ticketGroup:0});
-        }
-
-        const PreviewImg = (input) =>{
-            const preview = document.getElementById("preview");
-            const file = input.files[0];
-            if(file ){
-                const reader = new FileReader();
-
-                reader.onload = function(e){
-                    preview.src = e.target.result;
-                    preview.style.display = "block";
-                }
-
-                reader.readAsDataURL(file);
-            }
-        }
-        const ShowTimeStart = (e,id)=>{
-            let title =  document.querySelector(`[href="#${id}"]`);
-            title.innerHTML = e.value
-        }
-
-
-    </script>
+    <script src="/js/CreateEvent.js"></script>
 }

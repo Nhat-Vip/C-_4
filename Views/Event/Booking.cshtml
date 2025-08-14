@@ -1,3 +1,4 @@
+@using System.Globalization
 @section Styles{
     <style>
         .ticket-container .card {
@@ -52,7 +53,98 @@
             top: 10px;
             width: max-content;
         }
+
+
+        .seat-content {
+            transform: translate3d(0, 0, 0) scale(1);
+            min-width: 100%;
+            max-width: 1200px;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            @* border: 1px solid #ccc; *@
+            display: flex;
+            justify-content: center;
+            transition: transform 0s;
+
+
+        }
+
+        .seat-group {
+            box-sizing: border-box;
+            cursor: pointer;
+            position: absolute;
+            width: calc(var(--cols) * 40px);
+            height: calc(var(--rows) * 40px);
+            background-color: var(--bg);
+            transform-origin: top left;
+            z-index: 1;
+        }
+
+        .seat-group-body {
+            top: calc((calc(var(--rows) * 40px) - calc(var(--rows) * 25px - 10px)) / 2);
+            left: calc((calc(var(--cols) * 40px) - calc(var(--cols) * 25px - 10px)) / 2);
+            width: calc(var(--cols) * 25px - 10px);
+            height: calc(var(--rows) * 25px - 10px);
+            position: relative;
+        }
+
+        .seat {
+            font-size: 10px;
+            width: 15px;
+            z-index: 100;
+            height: 15px;
+            background-color: white;
+            color: black;
+            text-align: center;
+            position: absolute;
+            border-radius: 50%;
+            user-select: none;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+        #viewport {
+            display: flex;
+            border: solid 1px black;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: transparent;
+            cursor: grab;
+        }
+        .Booked{
+            background-color: red;
+            pointer-events: none;
+        }
+        .Selected{
+            background-color: green;
+        }
+        .group-color{
+            background-color: var(--bg);
+        }
     </style>
+}
+@model ListBookingModelView
+@{
+    var showTimeSeatId = 0;
+    if(ViewBag.showTimeSeatId == null || ViewBag.showTimeSeatId == ""){
+        Console.WriteLine("OOOOOO");
+        showTimeSeatId = 0;
+    }
+    else{
+        showTimeSeatId = ViewBag.showTimeSeatId;
+    }
+    @* var showTime = new ShowTime();
+    if(showTimeSeatId == 0){
+        showTime = Model.ShowTimes.First();
+        Console.WriteLine(showTime.ShowTimeTicketGroups.Any());
+    }
+    else{
+        showTime = Model.ShowTimes.FirstOrDefault(st=>st.Id == showTimeSeatId);
+    } *@
 }
 <div class="container-fluid">
     <div class="row position-relative">
@@ -73,8 +165,33 @@
                     <p>Không chọn được</p>
                 </div>
             </div>
+            <div id="viewport">
 
-            <div class="seat-content">
+                <div class="seat-content">
+                    @if(Model.SeatingChart != null){
+                        @foreach(var sgr in Model.SeatingChart.SeatGroups){
+                            <div class="seat-group" data-bs-toggle="tooltip" title="@sgr.Name" id="@sgr.Name" style="--bg:@sgr.Color; left:@(sgr.PosX)px;
+                            top:@(sgr.PosY)px; --cols:@sgr.Cols;--rows:@sgr.Rows">
+                                <div class="seat-group-body">
+
+                                    @foreach(var seat in sgr.Seats){
+                                        var showTimeSeat = Model.ShowTimes?.ShowTimeSeats.FirstOrDefault(st=>st.SeatId == seat.SeatId);
+                                        bool IsBooked = showTimeSeat?.IsBooked ?? false;
+                                        <div class="seat @(IsBooked ? "Booked":"")" style="left: @(seat.PosX)px; top:@(seat.PosY)px"
+                                        data-seat-id="@seat.SeatId"
+                                        data-group-name="@sgr.Name"
+                                        data-showTime-id="@Model.ShowTimes?.Id"
+                                        data-price="@sgr.ShowTimeTicketGroups?.Min(s=>s.Price)"
+                                        title="@seat.SeatName" onclick="BookSeat(this)">
+                                            @seat.SeatName
+                                        </div>
+                                    }
+
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
 
             </div>
         </div>
@@ -82,37 +199,42 @@
         <div class="ticket-container d-none d-lg-block col-4">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">Hài Kịch: Tung Hoành Pattaya</div>
+                    <div class="card-title">@Model._event?.EventName</div>
                 </div>
                 <div class="card-body" style="font-size: 12px; font-weight: 600">
                     <div class="card-text">
-                        <p class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-calendar"></i>20:00 - 23:00,
-                            10 tháng 08, 2025</p>
-                        <p class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-location-dot"></i>Nhà Văn
-                            Hóa Thanh Niên Hồ Chí Minh
-                            Số 4 Phạm Ngọc Thạch, Phường Bến Nghé, Quận 1, Thành Phố Hồ Chí Minh</p>
+                        <p class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-calendar"></i>
+                        @Model.ShowTimes?.StartTime.ToString("HH:mm dd/MM/yyyy") - @Model.ShowTimes?.EndTime.ToString("HH:mm dd/MM/yyyy")
+                        </p>
+                        <p class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-location-dot"></i>@Model._event?.EventAddress</p>
                     </div>
                     <hr>
                     <div class="card-text">
                         <h6>Giá Vé</h6>
-                        <div class="d-flex flex-wrap mb-3 justify-content-between">
-                            <div class="input-group w-75">
-                                <input type="color" id="" class="disabled me-1" readonly>
-                                <span>Hạng VIP (không dành cho trẻ em dưới 16t)</span>
+                        @foreach (var tkg in Model.ShowTimes.ShowTimeTicketGroups)
+                        {
+                            var group = Model.SeatingChart?.SeatGroups
+                            .Where(gr => gr.ShowTimeTicketGroups != null
+                            && gr.ShowTimeTicketGroups.Any(stg => stg.SeatGroupId == tkg.SeatGroupId)).FirstOrDefault();
+                            <div class="d-flex flex-wrap mb-3 justify-content-between">
+                                <div class="input-group w-75">
+                                    <div class="me-1" style="padding: 12px 18px; background-color: @(group?.Color);"></div>
+                                    <span>@tkg.Name</span>
+                                </div>
+                                <span class="text-success">@tkg.Price.ToString("C0", new CultureInfo("vi-VN"))</span>
                             </div>
-                            <span class="text-success">300.000 đ</span>
-                        </div>
-                        <div class="d-flex flex-wrap  justify-content-between">
-                            <div class="input-group w-75">
-                                <input type="color" id="" class="disabled me-1" readonly>
-                                <span>Hạng VIP (không dành cho trẻ em dưới 16t)</span>
-                            </div>
-                            <span class="text-success">300.000 đ</span>
-                        </div>
+                        }
+                        
                     </div>
                 </div>
-                <div class="card-footer">
-                    <button class="btn btn-success w-100">Mua vé</button>
+                <div class="card-footer p-3">
+                    <div id="selected-ticket" class="text-white fw-bold mb-3">
+                    </div>
+                    <form method="post" asp-action="SaveSeatStatus" onsubmit="Payment(this)">
+                        <input type="hidden" name="id" value="@TempData["EventId"]">
+                        <input type="hidden" name="seatsJson" id="seatsJson">
+                        <button class="btn btn-success w-100 disabled" id="Buy">Mua vé</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -132,35 +254,38 @@
                 <div class="ticket-container">
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">Hài Kịch: Tung Hoành Pattaya</div>
+                            <div class="card-title">@Model._event?.EventName</div>
                         </div>
                         <div class="card-body" style="font-size: 12px; font-weight: 600">
                             <div class="card-text">
-                                <p class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-calendar"></i>20:00
-                                    - 23:00, 10 tháng
-                                    08, 2025</p>
+                                <p class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-calendar"></i>
+                                @Model.ShowTimes?.StartTime.ToString("HH:mm dd/MM/yyy") - @Model.ShowTimes?.EndTime.ToString("HH:mm dd/MM/yyyy")
+                                </p>
                                 <p class="mb-4" style="font-weight: 600;"><i
-                                        class="fa-solid fa-location-dot"></i>Nhà Văn Hóa Thanh Niên
-                                    Hồ Chí Minh
-                                    Số 4 Phạm Ngọc Thạch, Phường Bến Nghé, Quận 1, Thành Phố Hồ Chí Minh</p>
+                                        class="fa-solid fa-location-dot"></i>@Model._event?.EventAddress</p>
                             </div>
                             <hr>
                             <div class="card-text">
                                 <h6>Giá Vé</h6>
-                                <div class="d-flex flex-wrap mb-3 justify-content-between">
+                                @if(Model.ShowTimes?.ShowTimeTicketGroups != null){
+                                    @foreach(var tkg in Model.ShowTimes!.ShowTimeTicketGroups){
+                                        <div class="d-flex flex-wrap mb-3 justify-content-between">
+                                            <div class="input-group w-75">
+                                                <div class="me-1 bg-black group-color" style="padding: 12px 18px; --bg:@tkg.SeatGroup.Color"></div>
+                                                <span>@tkg.Name</span>
+                                            </div>
+                                            <span class="text-success">@tkg.Price.ToString("C0",new CultureInfo("vi-VN"))</span>
+                                        </div>
+                                    }
+                                }
+                                
+                                @* <div class="d-flex flex-wrap  justify-content-between">
                                     <div class="input-group w-75">
                                         <input type="color" id="" class="disabled me-1" readonly>
                                         <span>Hạng VIP (không dành cho trẻ em dưới 16t)</span>
                                     </div>
                                     <span class="text-success">300.000 đ</span>
-                                </div>
-                                <div class="d-flex flex-wrap  justify-content-between">
-                                    <div class="input-group w-75">
-                                        <input type="color" id="" class="disabled me-1" readonly>
-                                        <span>Hạng VIP (không dành cho trẻ em dưới 16t)</span>
-                                    </div>
-                                    <span class="text-success">300.000 đ</span>
-                                </div>
+                                </div> *@
                             </div>
                         </div>
                         <div class="card-footer">
@@ -172,3 +297,156 @@
         </div>
     </div>
 </div>
+@section Scripts{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var listSeatSelected = [];
+        var maxTicket = []
+        @foreach(var item in Model.ShowTimes.ShowTimeTicketGroups){
+                <text>
+                    maxTicket.push({
+                        Name: "@item.Name",
+                        MaxTicket: @item.MaxTicket
+                    });
+                </text>
+        }
+        console.log(maxTicket);
+        const BookSeat = (e)=>{
+            if(e.classList.contains("Selected")){
+                e.classList.remove("Selected");
+                const index = listSeatSelected.findIndex(item=>item.Id == e.dataset.seatId);
+                listSeatSelected.splice(index,1);
+                document.getElementById("selected-ticket").innerHTML = `${listSeatSelected.map(item=> ` ${item.grName} - ${item.Name} `).join(',')}`;
+                if(listSeatSelected.length <= 0){
+                    document.getElementById("Buy").classList.add("disabled");
+                }
+            }
+            else{
+                document.getElementById("Buy").classList.remove("disabled");
+                const selectedCount = listSeatSelected.filter(item => item.grName == e.dataset.groupName).length;
+                const max = maxTicket.find(item => item.Name == e.dataset.groupName)?.MaxTicket ?? 0;
+                console.log("slectedCount",selectedCount);
+                console.log("max",max);
+                console.log("title",e.title);
+                if (selectedCount >= max && selectedCount != 0) {
+                    showErrorAlert("Đã đạt giới hạn số vé có thể đặt trong nhóm ghế này");
+                    return;
+                }
+
+                e.classList.add("Selected")
+                const seat = {Name:e.title,SeatId:e.dataset.seatId,grName:e.dataset.groupName
+                ,Price:e.dataset.price,ShowTimeId:e.dataset.showTimeId}
+                listSeatSelected.push(seat);
+                console.log("seat",seat);
+                document.getElementById("selected-ticket").innerHTML = `${listSeatSelected.map(item=> ` ${item.grName} - ${item.Name} `).join(',')}`;
+            }
+        }
+
+
+        function FormatTime(date){
+            const d =new Date(date);
+            const day = String(d.getDate()).padStart(2,'0');
+            const moth = String(d.getMonth() + 1).padStart(2,'');
+            const year = d.getFullYear();
+            
+            const hour = String(d.getHours()).padStart(2,'0');
+            const minutes = String(d.getHours()).padStart(2,'0');
+
+            return `${hour}:${minutes} ${day}/${moth}/${year}`;
+        }
+
+
+        @* Chuyển đến trang thanh toán *@
+        const Payment = (e)=>{
+            const json = JSON.stringify(listSeatSelected);
+            document.getElementById("seatsJson").value = json;
+        }
+
+        let currentScale = 1; // scale mặc định
+        const content = document.getElementById("seat-container");
+        const container = document.getElementById("viewport");
+        container.addEventListener("wheel", (e) => {
+            e.preventDefault();
+
+            if (e.deltaY < 0) {
+                // Lăn lên -> zoom in
+                currentScale += 0.05;
+            } else {
+                // Lăn xuống -> zoom out
+                currentScale -= 0.05;
+            }
+
+            // Giới hạn scale từ 0.5 đến 2
+            currentScale = Math.min(Math.max(currentScale, 0.5), 1.5);
+            updateTransform();
+        });
+
+        const viewport = document.getElementById("viewport");
+        const grid = document.querySelector(".seat-content");
+
+        let isPanning = false;
+        let startX, startY;
+        let offsetX = -grid.offsetWidth / 2;
+        let offsetY = -grid.offsetHeight / 2;
+
+        // Chuột phải để pan
+        viewport.addEventListener("mousedown", (e) => {
+            if(e.target.classList.contains("seat")){
+                return;
+            }
+            if (e.button === 0) { // Chuột trái
+                isPanning = true;
+                viewport.style.cursor = "grabbing";
+                startX = e.clientX;
+                startY = e.clientY;
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener("mouseup", () => {
+            isPanning = false;
+            viewport.style.cursor = "grab";
+        });
+
+        document.addEventListener("mousemove", (e) => {
+            if (!isPanning) return;
+            const dx = (e.clientX - startX) / currentScale;
+            const dy = (e.clientY - startY) / currentScale;
+            offsetX += dx;
+            offsetY += dy;
+            // grid.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+            updateTransform();
+
+            startX = e.clientX;
+            startY = e.clientY;
+        });
+
+        function updateTransform() {
+            @* document.getElementById("seat-content").style.transform = `scale(${currentScale})`; *@
+            grid.style.transform = `translate3d(${Math.round(offsetX)}px, ${Math.round(offsetY)}px, 0) scale(${currentScale})`;
+        }
+
+
+
+        function showErrorAlert(err) {
+            Swal.fire({
+                icon: 'error',
+                title: err,
+                showConfirmButton: false,
+                timer: 2000,
+                toast: true,
+                position: 'top'
+            });
+        }
+        function showSuccessAlert(ms) {
+            Swal.fire({
+                icon: 'success',
+                title: ms,
+                showConfirmButton: false,
+                timer: 2000,
+                toast: true,
+                position: 'top'
+            });
+        }
+    </script>
+}

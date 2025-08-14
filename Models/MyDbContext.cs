@@ -9,7 +9,6 @@ public class MyDbContext : DbContext
     public DbSet<SeatGroup> SeatGroups { set; get; }
     public DbSet<SeatingChart> SeatingCharts { set; get; }
     public DbSet<Ticket> Tickets { set; get; }
-    public DbSet<TicketGroup> TicketGroups { set; get; }
     public DbSet<User> Users { set; get; }
     public DbSet<Refund> Refunds{ set; get; }
     public DbSet<TicketDetail> TicketDetails{ set; get; }
@@ -68,7 +67,7 @@ public class MyDbContext : DbContext
         modelBuilder.Entity<TicketDetail>()
         .HasOne(td => td.ShowTimeSeat)
         .WithOne(s => s.TicketDetail)
-        .HasForeignKey<TicketDetail>(td => new { td.ShowTimeId,td.SeatId })
+        .HasForeignKey<TicketDetail>(td =>new { td.ShowTimeId, td.SeatId })
         .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Payment>()
@@ -86,7 +85,7 @@ public class MyDbContext : DbContext
         modelBuilder.Entity<SeatingChart>()
         .HasOne(stc => stc.Event)
         .WithOne(e => e.SeatingChart)
-        .HasForeignKey<SeatingChart>(stc => stc.SeatingChartId)
+        .HasForeignKey<SeatingChart>(stc => stc.EventId)
         .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<SeatGroup>()
@@ -99,14 +98,7 @@ public class MyDbContext : DbContext
         .HasOne(s => s.SeatGroup)
         .WithMany(sg => sg.Seats)
         .HasForeignKey(s => s.SeatGroupId)
-         .OnDelete(DeleteBehavior.NoAction);
-
-
-        modelBuilder.Entity<TicketGroup>()
-        .HasMany(tkg => tkg.SeatGroups)
-        .WithOne(sg => sg.TicketGroup)
-        .HasForeignKey(tkg => tkg.TicketGroupId)
-        .OnDelete(DeleteBehavior.SetNull);
+        .OnDelete(DeleteBehavior.NoAction);
 
 
         modelBuilder.Entity<ShowTime>()
@@ -128,7 +120,7 @@ public class MyDbContext : DbContext
         .HasForeignKey(sts => sts.SeatId);
 
         modelBuilder.Entity<ShowTimeTicketGroup>()
-        .HasKey(stk => new { stk.ShowTimeId, stk.TicketGruopId });
+        .HasKey(stk => new { stk.ShowTimeId, stk.SeatGroupId});
 
         modelBuilder.Entity<ShowTimeTicketGroup>()
         .HasOne(stk => stk.ShowTime)
@@ -136,9 +128,9 @@ public class MyDbContext : DbContext
         .HasForeignKey(stk => stk.ShowTimeId);
 
         modelBuilder.Entity<ShowTimeTicketGroup>()
-        .HasOne(stk => stk.TicketGroup)
+        .HasOne(stk => stk.SeatGroup)
         .WithMany(tkg => tkg.ShowTimeTicketGroups)
-        .HasForeignKey(stk => stk.TicketGruopId);
+        .HasForeignKey(stk => stk.SeatGroupId);
 
     }   
 }

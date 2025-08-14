@@ -10,8 +10,8 @@ public class Ticket
     public Event Event { set; get; } = null!;
     public int? UserId { set; get; }
     public User User { set; get; } = null!;
-    public Payment Payment { set; get; } = null!;
-    public Refund Refund { set; get; } = null!;
+    public Payment? Payment { set; get; }
+    public Refund? Refund { set; get; }
     public List<TicketDetail> TicketDetails { set; get; } = new();
 }
 public enum TicketStatus

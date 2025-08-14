@@ -337,3 +337,5 @@ function updateTransform() {
 }
 // Ngăn menu chuột phải khi pan
 viewport.addEventListener("contextmenu", (e) => e.preventDefault());
+
+

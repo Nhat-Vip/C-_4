@@ -15,7 +15,7 @@
     <header>
         <nav class="navbar navbar-expand-md navbar-toggleable-md p-3 navbar-light bg-success border-bottom box-shadow">
             <div class="container-fluid fs-5">
-                <a class="navbar-brand fs-4 fw-bold text-white" asp-area="" asp-controller="Home" asp-action="Index">TicketNow</a>
+                <a class="navbar-brand fs-4 fw-bold my-2 text-white" asp-area="" asp-controller="Home" asp-action="Index">TicketNow</a>
                 <div class=" position-relative border-1 border-black flex-grow-1" style="min-height: 35px;">
                     <form action="" class="rounded-5 ps-3 search bg-white w-auto d-flex" style="max-width: 300px !important;">
                             @* <label for="Search" class="form-label">Search</label> *@
@@ -104,12 +104,12 @@
                                 if (User.IsInRole("Admin")){
                                     <div class="dropdown">
                                         <button class="btn btn-light p-0 border-0 rounded-circle" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <img src="images/dutcuc.png" width="30px" class="rounded-circle" alt="">
+                                            <img src="/Images/dutcuc.png" width="30px" style="width: 30px !important;" class="rounded-circle" alt="">
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-end">
                                             <li><a asp-action="Index" asp-controller="User" class="dropdown-item">Profile</a></li>
                                             @* <li><a asp-action="Index" asp-controller="" class="dropdown-item">MyTicket</a></li> *@
-                                            <li><a asp-action="Dashboard" asp-controller="Admin" class="dropdown-item">Dashboard</a></li>
+                                            <li><a asp-action="Index" asp-controller="Admin" class="dropdown-item">Dashboard</a></li>
                                             <li>
                                                 <hr href="#" class="dropdown-divider">
                                                 </hr>
@@ -147,11 +147,30 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - ASM_C_4 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>TicketNow</h3>
+                    <p>Trải nghiệm mua vé nhanh chóng cùng chúng tôi!</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên kết</h3>
+                    <ul>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">Twitter</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Liên hệ</h3>
+                    <p>Email: support@concertticket.com</p>
+                    <p>Phone: +84 123 456 789</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Concert Ticket. All rights reserved.</p>
+            </div>
+        </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

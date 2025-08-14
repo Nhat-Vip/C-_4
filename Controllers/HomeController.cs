@@ -1,24 +1,44 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ASM_C_4.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace ASM_C_4.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly IEventService _event;
+    private readonly MyDbContext _context;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, IEventService @event,MyDbContext context)
     {
+        _context = context;
+        _event = @event;
         _logger = logger;
-        
+
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var ev = await _context.Events.Take(10).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
+        return View(ev);
     }
 
+    public async Task<IActionResult> GetEvent(string type)
+    {
+        var ev = new List<Event>();
+        if (type == "All")
+        {
+            ev = await _context.Events.Take(10).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
+        }
+        else
+        {
+            ev = await _context.Events.Where(e => e.EventType.ToString() == type).Take(10).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
+        }
+        return PartialView("_EventPartial", ev);
+    }
     public IActionResult Privacy()
     {
         return View();

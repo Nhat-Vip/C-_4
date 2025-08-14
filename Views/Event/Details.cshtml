@@ -1,3 +1,4 @@
+@using System.Globalization
 @section Styles{
     <style>
         body {
@@ -152,22 +153,30 @@
         }
     </style>
 }
+@model Event
 <div class="header-event w-100 ">
-    <img src="/Images/2.jpg" alt="">
+    <img src="@Model.Image" alt="">
     <div class="row p-5">
         <div class="col-5">
-            <img src="/Images/2.jpg" class="event-img w-100 mb-3" alt="">
-            <a asp-action="BookingTicket" asp-controller="Event" class="buy-ticket w-100 fs-4 fw-bold mb-3">Đặt vé</a>
+            <img src="@Model.Image" class="event-img w-100 mb-3" alt="">
+            <a asp-action="BookingTicket" asp-route-id="@Model.EventId" asp-route-stId="0" asp-controller="Event" class="buy-ticket w-100 fs-4 fw-bold mb-3">Đặt vé</a>
         </div>
         <div class="col-6" style="color: rgb(255, 255, 255);">
-            <h4>Hài Kịch: Tung Hoành Pattaya</h4>
-            <h5 class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-calendar"></i>20:00 - 23:00, 10 tháng
-                08, 2025</h5>
-            <h5 class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-location-dot"></i>Nhà Văn Hóa Thanh
-                Niên Hồ Chí Minh
-                Số 4 Phạm Ngọc Thạch, Phường Bến Nghé, Quận 1, Thành Phố Hồ Chí Minh</h5>
+            <h4>@Model.EventName</h4>
+            <h5 class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-calendar"></i>@Model.StartEvent</h5>
+            <h5 class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-location-dot"></i>@Model.EventAddress</h5>
             <h5 class="mb-4" style="font-weight: 600;"><i class="fa-solid fa-money-bill"></i>Giá vé
-                <p style="text-indent: 30px; font-weight: 200;">Từ 350.000 VND đến 350.000 VND</p>
+                @{
+                    var ticketGroups = (Model.ShowTimes != null)
+                    ? Model.ShowTimes.SelectMany(e => e.ShowTimeTicketGroups ?? new List<ShowTimeTicketGroup>()).ToList()
+                    : new List<ShowTimeTicketGroup>();
+                    Console.WriteLine(ticketGroups.Any());
+                    Console.WriteLine(ticketGroups.First());
+                    var minPrice = ticketGroups.Any() ? ticketGroups.Min(x => x.Price) : 0;
+                    var maxPrice = ticketGroups.Any() ? ticketGroups.Max(x => x.Price) : 0;
+                }
+                <p style="text-indent: 30px; font-weight: 200;">Từ @minPrice.ToString("C0", new CultureInfo("vi-VN")) VND
+                    đến @maxPrice.ToString("C0", new CultureInfo("vi-VN")) VND</p>
             </h5>
         </div>
     </div>
@@ -180,6 +189,8 @@
     <hr>
     <h3 id="GioiThieu">Giới thiệu</h3>
     <p class="text-black fw-normal" style="line-height: 30px;">
+        @Model.Description
+        <br>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni odit architecto facere blanditiis nostrum
         sapiente debitis autem earum tempora sed modi maiores nam tenetur quod, beatae quae natus explicabo
         cupiditate.
@@ -194,24 +205,38 @@
         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Tempore velit consequatur magnam nobis impedit,
         eum perferendis illo fugit illum. Aperiam in magni adipisci sed consectetur exercitationem perspiciatis
         fugiat ipsam suscipit!
+        "
     </p>
-    <div id="ShowTime">
+    <div id="ShowTime" class="mb-4">
         <h4 class="text-center p-3">Thông tin xuất chiếu</h4>
-        <div class=" card">
-            <div class="card-header row">
-                <a class="btn col-8 text-white text-start" href="#ShowTimeOne" data-bs-toggle="collapse">20:00 -
-                    23:00<br>10 Tháng 08, 2025 </a>
-                <button class="btn col-3 btn-success" style="height: max-content">Mua vé</button>
-            </div>
-            <div id="ShowTimeOne" class="collapse show" data-bs-parent="#ShowTime">
-                <div class="card-body">
-                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quod accusantium sed voluptatum non ad
-                    et quia ipsam delectus placeat, quam enim labore quisquam nostrum officia dolores magni quo
-                    ducimus accusamus.
+        @if(Model.ShowTimes != null && Model.ShowTimes.Any()){
+            @foreach(var st in Model.ShowTimes){
+                <div class="card">
+                    <div class="card-header w-100 row justify-content-between">
+                        <a class="btn col-8 text-white text-start" href="#ShowTime@(st.Id)"
+                            data-bs-toggle="collapse">@st.StartTime.ToString("dd/MM/yyyy HH:mm") -
+                            @st.EndTime.ToString("dd/MM/yyyy HH:mm")
+                        </a>
+                        <a asp-action="BookingTicket" asp-controller="Event" class="btn col-3 btn-success" style="height: max-content">Mua vé</a>
+                    </div>
+                    <div id="ShowTime@(st.Id)" class="collapse show" data-bs-parent="#ShowTime">
+                        <div class="card-body">
+                            @foreach(var tk in st.ShowTimeTicketGroups){
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-white fw-bold">@tk.Name</p>
+                                    <p class="text-white fw-bold me-3">@tk.Price.ToString("C0", new CultureInfo("vi-VN"))</p>
+                                </div>
+                            }
+                            @* "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quod accusantium sed voluptatum non ad
+                            et quia ipsam delectus placeat, quam enim labore quisquam nostrum officia dolores magni quo
+                            ducimus accusamus." *@
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="card">
+            }
+        }
+
+        @* <div class="card">
             <div class="card-header">
                 <a class="btn col-8 text-white text-start" href="#ShowTimeTwo" data-bs-toggle="collapse">20:00 -
                     23:00<br>10 Tháng 08, 2025 </a>
@@ -224,6 +249,6 @@
                     ducimus accusamus.
                 </div>
             </div>
-        </div>
+        </div> *@
     </div>
 </div>

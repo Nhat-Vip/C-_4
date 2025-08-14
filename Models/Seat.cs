@@ -6,6 +6,6 @@ public class Seat
     public int PosX { set; get; }
     public int PosY { set; get; }
     public int SeatGroupId { set; get; }
-    public SeatGroup SeatGroup { set; get; } = null!;
-    public List<ShowTimeSeat> ShowTimeSeats { set; get; } = new();
+    public SeatGroup? SeatGroup { set; get; } = null!;
+    public List<ShowTimeSeat>? ShowTimeSeats { set; get; } = new();
 }

@@ -29,6 +29,12 @@ namespace ASM_C_4.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventId"));
 
+                    b.Property<string>("BankName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreateAt")
                         .HasColumnType("datetime2");
 
@@ -54,12 +60,6 @@ namespace ASM_C_4.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("SeatingChartId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SoNganHang")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartEvent")
@@ -175,6 +175,12 @@ namespace ASM_C_4.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SeatGroupId"));
 
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Cols")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -185,17 +191,18 @@ namespace ASM_C_4.Migrations
                     b.Property<int>("PosY")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SeatingChartId")
+                    b.Property<string>("Rotate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Rows")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TicketGroupId")
+                    b.Property<int?>("SeatingChartId")
                         .HasColumnType("int");
 
                     b.HasKey("SeatGroupId");
 
                     b.HasIndex("SeatingChartId");
-
-                    b.HasIndex("TicketGroupId");
 
                     b.ToTable("SeatGroups");
                 });
@@ -203,11 +210,13 @@ namespace ASM_C_4.Migrations
             modelBuilder.Entity("SeatingChart", b =>
                 {
                     b.Property<int>("SeatingChartId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SeatingChartId"));
+
+                    b.Property<int?>("EventId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("PosX")
                         .HasColumnType("int");
@@ -216,6 +225,10 @@ namespace ASM_C_4.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("SeatingChartId");
+
+                    b.HasIndex("EventId")
+                        .IsUnique()
+                        .HasFilter("[EventId] IS NOT NULL");
 
                     b.ToTable("SeatingCharts");
                 });
@@ -267,14 +280,17 @@ namespace ASM_C_4.Migrations
                     b.Property<int>("ShowTimeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TicketGruopId")
+                    b.Property<int>("SeatGroupId")
                         .HasColumnType("int");
+
+                    b.Property<int>("MaxTicket")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("TicketSaleEnd")
                         .HasColumnType("datetime2");
@@ -282,9 +298,9 @@ namespace ASM_C_4.Migrations
                     b.Property<DateTime>("TicketSaleStart")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("ShowTimeId", "TicketGruopId");
+                    b.HasKey("ShowTimeId", "SeatGroupId");
 
-                    b.HasIndex("TicketGruopId");
+                    b.HasIndex("SeatGroupId");
 
                     b.ToTable("ShowTimeTicketGroups");
                 });
@@ -350,26 +366,6 @@ namespace ASM_C_4.Migrations
                     b.ToTable("TicketDetails");
                 });
 
-            modelBuilder.Entity("TicketGroup", b =>
-                {
-                    b.Property<int>("TicketGroupId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TicketGroupId"));
-
-                    b.Property<int>("MaxTicket")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("TicketGroupId");
-
-                    b.ToTable("TicketGroups");
-                });
-
             modelBuilder.Entity("User", b =>
                 {
                     b.Property<int>("UserId")
@@ -377,6 +373,9 @@ namespace ASM_C_4.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+
+                    b.Property<string>("Avatar")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -451,23 +450,15 @@ namespace ASM_C_4.Migrations
                         .HasForeignKey("SeatingChartId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("TicketGroup", "TicketGroup")
-                        .WithMany("SeatGroups")
-                        .HasForeignKey("TicketGroupId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("SeatingChart");
-
-                    b.Navigation("TicketGroup");
                 });
 
             modelBuilder.Entity("SeatingChart", b =>
                 {
                     b.HasOne("Event", "Event")
                         .WithOne("SeatingChart")
-                        .HasForeignKey("SeatingChart", "SeatingChartId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("SeatingChart", "EventId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Event");
                 });
@@ -504,21 +495,21 @@ namespace ASM_C_4.Migrations
 
             modelBuilder.Entity("ShowTimeTicketGroup", b =>
                 {
+                    b.HasOne("SeatGroup", "SeatGroup")
+                        .WithMany("ShowTimeTicketGroups")
+                        .HasForeignKey("SeatGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ShowTime", "ShowTime")
                         .WithMany("ShowTimeTicketGroups")
                         .HasForeignKey("ShowTimeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TicketGroup", "TicketGroup")
-                        .WithMany("ShowTimeTicketGroups")
-                        .HasForeignKey("TicketGruopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("SeatGroup");
 
                     b.Navigation("ShowTime");
-
-                    b.Navigation("TicketGroup");
                 });
 
             modelBuilder.Entity("Ticket", b =>
@@ -557,8 +548,7 @@ namespace ASM_C_4.Migrations
 
             modelBuilder.Entity("Event", b =>
                 {
-                    b.Navigation("SeatingChart")
-                        .IsRequired();
+                    b.Navigation("SeatingChart");
 
                     b.Navigation("ShowTimes");
 
@@ -573,6 +563,8 @@ namespace ASM_C_4.Migrations
             modelBuilder.Entity("SeatGroup", b =>
                 {
                     b.Navigation("Seats");
+
+                    b.Navigation("ShowTimeTicketGroups");
                 });
 
             modelBuilder.Entity("SeatingChart", b =>
@@ -589,26 +581,16 @@ namespace ASM_C_4.Migrations
 
             modelBuilder.Entity("ShowTimeSeat", b =>
                 {
-                    b.Navigation("TicketDetail")
-                        .IsRequired();
+                    b.Navigation("TicketDetail");
                 });
 
             modelBuilder.Entity("Ticket", b =>
                 {
-                    b.Navigation("Payment")
-                        .IsRequired();
+                    b.Navigation("Payment");
 
-                    b.Navigation("Refund")
-                        .IsRequired();
+                    b.Navigation("Refund");
 
                     b.Navigation("TicketDetails");
-                });
-
-            modelBuilder.Entity("TicketGroup", b =>
-                {
-                    b.Navigation("SeatGroups");
-
-                    b.Navigation("ShowTimeTicketGroups");
                 });
 
             modelBuilder.Entity("User", b =>

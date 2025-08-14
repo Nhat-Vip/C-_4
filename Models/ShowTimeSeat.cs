@@ -7,5 +7,5 @@ public class ShowTimeSeat
     public Seat Seat { set; get; } = null!;
 
     public bool IsBooked { set; get; }
-    public TicketDetail TicketDetail { set; get; } = null!;
+    public TicketDetail? TicketDetail { set; get; } = null!;
 }

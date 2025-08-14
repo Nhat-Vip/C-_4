@@ -56,6 +56,8 @@ body {
 }
 
 .content {
+    /* max-height: 90vh !important;
+    overflow-y: auto; */
     text-align: center;
     padding: 50px;
 }
@@ -158,6 +160,8 @@ label {
 
 .event-info {
     /* margin-top: 10px; */
+    max-height: 90vh;
+    overflow-y: auto;
     justify-content: center;
     align-items: center;
     border: 2px solid #00cc00;
@@ -268,7 +272,13 @@ label {
 }
 
 .event-card {
+    height: max-content;
     border: 2px solid #00cc00;
     background: linear-gradient(135deg, #2c2c2c, #3a3a3a);
     box-shadow: 0 4px 15px rgba(0, 204, 0, 0.3);
+}
+.loader {
+    text-align: center;
+    padding: 10px;
+    display: none;
 }
