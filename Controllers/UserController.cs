@@ -44,7 +44,7 @@ public class UserController : Controller
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var events = new List<Event>();
-        if (status == "ALL")
+        if (status == "All")
         {
             events = await _context.Events.Where(s => s.UserId == int.Parse(userId!)).ToListAsync();
         }
@@ -55,19 +55,23 @@ public class UserController : Controller
         return Json(new { Events = events });
     }
 
-    [HttpPost]
-    public async Task<IActionResult> GetTickets(int page, int limit, [FromQuery] string status)
+    public async Task<IActionResult> GetTickets([FromQuery] int page,[FromQuery] int limit, [FromQuery] string status)
     {
         var loadTickets = new List<Ticket>();
+        Console.WriteLine("Page" + (page - 1));
+        Console.WriteLine("Limit" + limit);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (status == "All")
         {
-            loadTickets = await _context.Tickets.Skip((page - 1) * limit).Take(limit).Include(t => t.TicketDetails).Include(s => s.Event).ToListAsync();
-            Console.WriteLine("AAAAAAAAA");
+            loadTickets = await _context.Tickets.Where(t => t.UserId.ToString() == userId)
+                                                .Include(t => t.TicketDetails).Include(s => s.Event)
+                                                .Skip((page - 1) * limit).ToListAsync();
         }
         else
         {
-            loadTickets = await _context.Tickets.Skip((page - 1) * limit).Take(limit).Where(tk => tk.Status.ToString() == status).Include(t => t.TicketDetails).Include(s => s.Event).ToListAsync();
-            Console.WriteLine("BBBBBBBBBBBBBBBBBBBBb");
+            loadTickets = await _context.Tickets.Where(tk => tk.Status.ToString() == status && tk.UserId.ToString() == userId)
+                                                .Include(t => t.TicketDetails).Include(s => s.Event)
+                                                .Skip((page - 1) * limit).Take(limit).ToListAsync();
 
         }
         if (loadTickets == null || !loadTickets.Any())
@@ -76,16 +80,71 @@ public class UserController : Controller
         }
         var ticketData = loadTickets.Select(t => new
         {
-            eventName = t.Event.EventName, // Giả định có trường EventName, thay bằng tên thực tế
-            date = t.Event.StartEvent.ToString("dd/MM/yyyy"), // Giả định có trường EventDate
-            location = t.Event.EventAddress, // Giả định có trường Location
+            eventId = t.EventId,
+            ticketId = t.TicketId,
+            eventName = t.Event?.EventName ?? "Chưa có dữ liệu",
+            date = t.Event?.StartEvent.ToString("dd/MM/yyyy") ?? "Chưa có dữ liệu",
+            location = t.Event?.EventAddress ?? "Chưa có dữ liệu",
             status = t.Status.ToString(),
-            quantity = t.TicketDetails.Count(), 
-            total = t.Total.ToString("C0",new CultureInfo("vi-VN"))
-        }).ToList();
-        return Json(new { tickets = loadTickets });
+            quantity = t.TicketDetails?.Count() ?? 0,
+            total = t.Total.ToString("C0", new CultureInfo("vi-VN")),
+            ticketDetails = t.TicketDetails?.Select(td => new
+            {
+                ticketDetailId = td.TicketDetailId,
+                seatId = td.SeatId,
+                showTimeId = td.ShowTimeId
+            }).ToList()
+        }).DistinctBy(e=> e.eventId).ToList();
+        Console.WriteLine("Số lượng vé: " + ticketData.Count);
+        return Json(new { tickets = ticketData });
     }
 
+
+    [HttpGet]
+    public async Task<IActionResult> DeleteTicket(int id)
+    {
+        try
+        {
+            // Tìm ticket cần xóa
+            var ticket = await _context.Tickets
+                .Include(t => t.TicketDetails)
+                .Include(t => t.Payment)
+                .Include(t => t.Refund)
+                .FirstOrDefaultAsync(t => t.TicketId == id);
+
+            if (ticket == null)
+            {
+                return NotFound(new { message = "Không tìm thấy vé để xóa" });
+            }
+
+            // Xóa các TicketDetails liên quan
+            _context.TicketDetails.RemoveRange(ticket.TicketDetails);
+
+            // Xóa Payment nếu tồn tại
+            if (ticket.Payment != null)
+            {
+                _context.Payments.Remove(ticket.Payment);
+            }
+
+            // Xóa Refund nếu tồn tại
+            if (ticket.Refund != null)
+            {
+                _context.Refunds.Remove(ticket.Refund);
+            }
+
+            // Xóa ticket
+            _context.Tickets.Remove(ticket);
+
+            // Lưu thay đổi vào DB
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = "Xóa vé thành công" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Lỗi khi xóa vé: " + ex.Message });
+        }
+    }
 
     public async Task<string> SaveImg(IFormFile file)
     {

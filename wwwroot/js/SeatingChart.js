@@ -22,7 +22,7 @@ function generateSeats() {
         alert("Vui Long nhap ten");
         return;
     }
-    if (listBlockName.find(item => item == name)) {
+    if (document.getElementById(name)) {
         alert("Ten da ton tai");
         return;
     }
@@ -225,6 +225,13 @@ function makeGroupDraggable(el) {
         };
     };
 }
+
+window.onload = function () {
+    const groups = document.querySelectorAll(".seat-group");
+    groups.forEach(el => makeGroupDraggable(el));
+};
+
+
 function updateSeatValue(e, id, value) {
     var seatContainer = document.querySelector("#seat-container");
     var block = seatContainer.querySelector(`#${id}`);

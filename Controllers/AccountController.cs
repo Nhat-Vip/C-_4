@@ -24,7 +24,7 @@ public class AccountController : Controller
         var user = await _account.Login(email, password);
         if (user!=null)
         {
-            await LoginUser(user.Email!, user.UserName!, user.Role.ToString(), user.UserId);
+            await LoginUser(user.Email!, user.UserName!, user.Role.ToString(), user.UserId,user.Avatar);
             // Đăng nhập thành công, chuyển hướng về Home
             return RedirectToAction("Index", "Home");
         }
@@ -56,17 +56,18 @@ public class AccountController : Controller
             return View(user);
         }
         ViewBag.Success = "Đăng ký thành công!";
-        await LoginUser(user.Email!, user.UserName!, user.Role.ToString(), user.UserId);
+        await LoginUser(user.Email!, user.UserName!, user.Role.ToString(), user.UserId,user.Avatar);
         return RedirectToAction("Index", "Home");
     }
 
-    private async Task LoginUser(string email, string userName, string role, int userId)
+    private async Task LoginUser(string email, string userName, string role, int userId, string? avatar)
     {
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Email,email),
             new Claim(ClaimTypes.Name,userName),
             new Claim(ClaimTypes.Role, role),
+            new Claim(ClaimTypes.Uri, avatar ?? "/Images/default-avatar.jpg"),
             new Claim(ClaimTypes.NameIdentifier,userId.ToString())
         };
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

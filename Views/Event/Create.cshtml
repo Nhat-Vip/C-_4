@@ -98,9 +98,10 @@
         }
     </style>
 }
+@model Event
     <div class="container-fluid p-0 mt-0">
-        <input type="hidden" id="UserId" value="@ViewBag.UserId">
-        <input type="hidden" id="eventId">
+        <input type="hidden" id="UserId" value="@(ViewBag.UserId != null ? ViewBag.UserId : Model.UserId)">
+        <input type="hidden" id="eventId" value="@(Model.EventId)">
         <div class="d-flex w-100 p-3 justify-content-between" style="background-color: rgb(54, 58, 54); width: 100vw;">
             <ul class="nav nav-tabs"  id="CreateEventMenu" role="tablist">
                 <li class="nav-item">
@@ -108,21 +109,21 @@
                     data-bs-target="#EventInfo" id="tab1" role="tab" onclick="SetTabIndex(0)">Thông tin sự kiện</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link disabled" data-bs-toggle="tab" data-bs-target="#EventSeatingChart" id="tab2"
+                    <button class="nav-link @(Model?.EventName ?? "disabled")" data-bs-toggle="tab" data-bs-target="#EventSeatingChart" id="tab2"
                     role="tab" onclick="SetTabIndex(1)">Sơ đồ ghế</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link disabled" data-bs-toggle="tab" data-bs-target="#EventTicket" id="tab3"
-                    role="tab" onclick="SetTabIndex(2)">Thời gian & loại vé</button>
+                <button class="nav-link @(Model?.EventName ?? "disabled")" data-bs-toggle="tab"
+                    data-bs-target="#EventTicket" id="tab3" role="tab" onclick="SetTabIndex(2)">Thời gian & loại vé</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link disabled" data-bs-toggle="tab" data-bs-target="#EventPayment" id="tab4"
-                    role="tab" onclick="SetTabIndex(3)">Thông tin thanh toán</button>
+                <button class="nav-link @(Model?.EventName ?? "disabled")" data-bs-toggle="tab"
+                    data-bs-target="#EventPayment" id="tab4"          role="tab" onclick="SetTabIndex(3)">Thông tin thanh toán</button>
                 </li>
             </ul>
             <div class="d-flex justify-content-end align-items-center">
                 <button class="btn btn-light fw-bold me-3" style="height: max-content;" onclick="Next()">Tiếp tục</button>
-                <button class="btn btn-success fw-bold" style="height: max-content;">Lưu</button>
+                @* <button class="btn btn-success fw-bold" style="height: max-content;">Lưu</button> *@
             </div>
         </div>
         
@@ -131,7 +132,7 @@
                 <form id="EventInfo" class="w-75 event-info">
                     <div class="mt-3 mb-3">
                         <label for="EventName" class="form-label">Tên sự kiện</label>
-                        <input type="text" class="form-control" id="EventName" name="eventName" required>
+                        <input type="text" value="@Model?.EventName" class="form-control" id="EventName" name="eventName" required>
                         <span class="text-danger"></span>
                     </div>
                     <div class="mb-3">
@@ -139,38 +140,39 @@
                         <input type="file" accept="image/*" id="EventImage" onchange="PreviewImg(this)" class="form-control" name="img" required>
                         <span class="text-danger"></span>
                         <div class=" mt-3 justify-content-center" style="height: auto; width: max-content;">
-                            <img src="" class="w-100 p-4" id="preview" alt="Xem trước ảnh" style=" display: none; max-width: 520px;">
+                            <img src="@Model?.Image" class="w-100 p-4" id="preview" alt="Xem trước ảnh" style=" display: none; @(Model?.Image!=null ? "display:block;" : "") max-width: 520px;">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="EventAddress" class="form-label">Địa chỉ sự kiện</label>
-                        <input type="text" class="form-control" id="EventAddress" name="eventAddress" required>
+                        <input type="text" value="@Model?.EventAddress" class="form-control" id="EventAddress" name="eventAddress" required>
                         <span class="text-danger"></span>
 
                     </div>
                     <div class="mb-3 d-flex justify-content-between">
                         <div class="w-100 me-3">
                             <label for="StartEvent" class="form-label">Ngày bắt đầu sự kiện</label>
-                            <input type="datetime-local" id="StartEvent" class="form-control" name="startEvent" required>
+                            <input type="datetime-local" value="@(Model?.StartEvent.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))" id="StartEvent" class="form-control" name="startEvent" required>
                             <span class="text-danger"></span>
 
                         </div>
                         <div class="w-100">
                             <label for="EndEvent" class="form-label">Ngày kết thúc sự kiện</label>
-                            <input type="datetime-local" id="EndEvent" class="form-control" name="endEvent" required>
+                        <input type="datetime-local" value="@Model?.EndDateTime.ToString("yyyy-MM-ddTHH:mm")" id="EndEvent" class="form-control"
+                            name="endEvent" required>
                             <span class="text-danger"></span>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="EventType" class="form-label">Thể loại</label>
-                        <select id="EventType" class="form-select">
+                        <select id="EventType" class="form-select" value="@Model?.EventType" required>
                             <option value="Concert">Concert</option>
                             <option value="Sport">Sport</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="Description" class="form-label">Thông tin sự kiện</label>
-                        <textarea id="Description" class="form-control" style="height: 100px;" name="description" required></textarea>
+                        <textarea id="Description" class="form-control" style="height: 100px;"name="description" required>@Model?.Description</textarea>
                         <span class="text-danger"></span>
                     </div>
                 </form>
@@ -198,14 +200,96 @@
                         </div>
                         <button class="btn fs-5 mt-3 btn-success" onclick="Save()">Lưu thay đổi</button>
                         <div id="accordian" class="mt-3">
+                            @if (Model != null && Model.SeatingChart != null)
+                            {
+                                @foreach(var sgr in Model.SeatingChart.SeatGroups){
+                                    <div class="card mb-3" id="@sgr.Name">
+                                        <div class="card-header">
+                                            <a class="btn w-100 dropdown-toggle" data-bs-toggle="collapse" href="#@sgr.SeatGroupId">
+                                                @sgr.Name
+                                            </a>
+                                        </div>
+                                        <div id="@sgr.SeatGroupId" class="collapse" data-bs-parent="#accordian">
+                                            <div class="card-body">
+                                                <div class="mt-3 mb-3">
+                                                    <label class="form-label" for="name">
+                                                        <input type="text" id="name" value="@sgr.Name" class="form-control">
+                                                    </label>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="rotation" class="form-label">Rotation</label>
+                                                    <input type="range" id="rotation" min="0" max="360" value="@sgr.Rotate" class="form-range" oninput="updateSeatValue(this,'@sgr.Name',this.value)">
+                                                    <span>@sgr.Rotate</span>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <input type="color" id="color@(sgr.Name)" value="@sgr.Color" onchange="ChangeColor('@sgr.Name',this.value)">
+                                                </div>
+                                                <div class="overflow-y-scroll" style="height: 300px;">
+                                                    <table class="table table-borderless table-light">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Row</th>
+                                                                <th>Name</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @for (int i = 0; i < sgr.Rows; i++)
+                                                            {
+                                                                <tr>
+                                                                    <td>Row @i</td>
+                                                                    <td><input type="text" id="name" value="@sgr.Seats[i].SeatName" oninput="updateRowNameSeat('@sgr.Name','row@(i)',this,this.value)" class="w-25"></td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <button type="button" class="btn btn-success" onclick="SaveSeatGroup('@sgr.Name')">Lưu</button>
+                                                    <button class="btn btn-danger" onclick="DeleteSeatPlan('@sgr.Name')">Xóa sơ đồ ghế</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
                         </div>
                     </div>
                     <div id="viewport">
                         <div id="seat-container" class="col-9">
                             <div id="seat-content" class="seat-content">
-                                <!-- <div id="test" class="seat-group">
-                                        <div class="seat" style="left: 0px; right: 0px;">TESTTT</div>
-                                    </div> -->
+                                @if (Model != null && Model.SeatingChart != null)
+                                {
+                                    Console.WriteLine(Model.SeatingChart.SeatGroups.Count);
+                                    @foreach(var sgr in Model.SeatingChart.SeatGroups){
+                                        <div class="seat-group" id="@sgr.Name" style="transform: rotate(@sgr.Rotate)deg; --bg:@sgr.Color; left:@sgr.PosX; top:@sgr.PosY;--rows:@sgr.Rows; --cols:@sgr.Cols;">           
+                                            <div class="seat-group-body">
+                                                <div class="overlay" style="--bg:@sgr.Color">@sgr.Name</div>
+                                                @{
+                                                    // Sắp xếp ghế theo tọa độ Y trước
+                                                    var sortedSeats = sgr.Seats.OrderBy(s => s.PosY).ThenBy(s => s.PosX).ToList();
+
+                                                    // Nhóm ghế thành từng row theo PosY (dùng tolerance để tránh lệch pixel)
+                                                    var tolerance = 5; // sai số cho phép
+                                                    var rows = sortedSeats
+                                                        .GroupBy(s => Math.Round(s.PosY / (double)tolerance))
+                                                        .ToList();
+                                                }
+
+                                                @for (int r = 0; r < rows.Count; r++)
+                                                {
+                                                    <div id="row@(r)">
+                                                        @foreach (var seat in rows[r].OrderBy(s => s.PosX))
+                                                        {
+                                                            <div class="seat" style="left:@(seat.PosX)px; top:@(seat.PosY)px">
+                                                                @seat.SeatName
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                }
                             </div>
                         </div>
                     </div>
@@ -215,33 +299,105 @@
                 <div class="d-flex w-100 justify-content-center">
                     <div id="ShowTime" class="w-75">
                         <h4 class="fw-bold text-white">Thời gian sự kiện</h4>
-                        <div class="card mb-3">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <a href="#ShowTime1" class="btn w-75 text-start" data-bs-toggle="collapse" >Vui lòng nhập thông tin xuất chiếu</a>
-                                <button type="button" class=" btn btn-danger" style="height: max-content;">Xóa</button>
-                            </div>
-                            <div class="collapse show" id="ShowTime1" data-bs-parent="#ShowTime">
-                                <div class="card-body"  >
-                                    <div class="d-flex">
-                                        <div class="mb-3 w-100 me-3 mt-3">
-                                            <label for="showTimeStart" class="form-label" >Thời gian bắt đầu</label>
-                                        <input type="datetime-local" id="showTimeStart"
-                                            onchange="ShowTimeStart(this,'ShowTime1')" class="form-control" required>
-                                        </div>
-                                        <div class="mb-5 w-100 mt-3">
-                                            <label for="showTimeEnd" class="form-label">Thời gian kết thúc</label>
-                                        <input type="datetime-local" id="showTimeEnd" class="form-control" onchange="ChangeEndTime(this)" required>
-                                        <span class="text-danger"></span>
+
+                        @if(Model != null && Model.ShowTimes != null && Model.ShowTimes.Count > 0)
+                        {
+                            @for (int showTimeIndex = 0; showTimeIndex < Model.ShowTimes.Count; showTimeIndex++)
+                            {
+                                var showTime = Model.ShowTimes[showTimeIndex];
+
+                                <div class="card mb-3">
+                                    <div class="card-header d-flex justify-content-between">
+                                        <a href="#ShowTime@(showTimeIndex)" class="btn w-75 text-start" data-bs-toggle="collapse">
+                                            @showTime.StartTime.ToString("dd/MM/yyyy HH:mm")
+                                        </a>
+                                        <button type="button" class="btn btn-danger" style="height: max-content;" onclick="DeleteShowTime(this)">Xóa</button>
+                                    </div>
+
+                                    <div class="collapse" id="ShowTime@(showTimeIndex)" data-bs-parent="#ShowTime">
+                                        <div class="card-body">
+                                            <div class="d-flex">
+                                                <div class="mb-3 w-100 me-3 mt-3">
+                                                    <label for="showTimeStart" class="form-label">Thời gian bắt đầu</label>
+                                                    <input type="datetime-local"
+                                                        id="showTimeStart"
+                                                        value="@showTime.StartTime.ToString("yyyy-MM-ddTHH:mm")"
+                                                        onchange="ShowTimeStart(this,'ShowTime@(showTimeIndex)')"
+                                                        class="form-control">
+                                                </div>
+                                                <div class="mb-5 w-100 mt-3">
+                                                    <label for="showTimeEnd" class="form-label">Thời gian kết thúc</label>
+                                                    <input type="datetime-local"
+                                                        id="showTimeEnd"
+                                                        value="@showTime.EndTime.ToString("yyyy-MM-ddTHH:mm")"
+                                                        onchange="ChangeEndTime(this)"
+                                                        class="form-control">
+                                                    <span class="text-danger"></span>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3" id="TicketGroupContainer">
+                                                @* render ticket group của showTime *@
+                                                @foreach (var ticketGroup in showTime.ShowTimeTicketGroups)
+                                                {
+                                                    <div class="d-flex mb-3 ticket justify-content-between align-items-center p-2 rounded-3"
+                                                        id="ticket@(ticketGroup.SeatGroupId)"
+                                                        style="box-shadow: 0 0 5px black;">
+                                                        <p class="text-black fw-bold m-0">
+                                                            <i class="fa-solid fa-ticket"></i> @ticketGroup.Name
+                                                        </p>
+                                                        <div>
+                                                            <button class="btn btn-warning" onclick="updateTicket(this)">Sửa</button>
+                                                            <button class="btn btn-danger" onclick="deleteTicket(this)">Xóa</button>
+                                                        </div>
+                                                        <input type="hidden" id="TicketName" value="@ticketGroup.Name" />
+                                                        <input type="hidden" id="TicketPrice" value="@ticketGroup.Price" />
+                                                        <input type="hidden" id="SeatGroup" value="@ticketGroup.SeatGroupId" />
+                                                        <input type="hidden" id="MaxTicket" value="@ticketGroup.MaxTicket" />
+                                                        <input type="hidden" id="StartTime" value="@ticketGroup.TicketSaleStart" />
+                                                        <input type="hidden" id="EndTime" value="@ticketGroup.TicketSaleEnd" />
+                                                    </div>
+                                                }
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <button class="btn-showTime fw-bold" onclick="openAddModal('ShowTime@(showTimeIndex)')">Thêm loại vé</button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="mb-3" id="TicketGroupContainer">
-                                    </div>
-                                    <div class="mb-3">
-                                        <button class="btn-showTime fw-bold" onclick="openAddModal('ShowTime1')">Thêm loại vé</button>
+                                </div>
+                            }
+                        }
+
+                        else{
+                            <div class="card mb-3">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <a href="#ShowTime1" class="btn w-75 text-start" data-bs-toggle="collapse" >Vui lòng nhập thông tin xuất chiếu</a>
+                                    <button type="button" class=" btn btn-danger" style="height: max-content;">Xóa</button>
+                                </div>
+                                <div class="collapse show" id="ShowTime1" data-bs-parent="#ShowTime">
+                                    <div class="card-body"  >
+                                        <div class="d-flex">
+                                            <div class="mb-3 w-100 me-3 mt-3">
+                                                <label for="showTimeStart" class="form-label" >Thời gian bắt đầu</label>
+                                                <input type="datetime-local" id="showTimeStart"
+                                                onchange="ShowTimeStart(this,'ShowTime1')" class="form-control" required>
+                                            </div>
+                                            <div class="mb-5 w-100 mt-3">
+                                                <label for="showTimeEnd" class="form-label">Thời gian kết thúc</label>
+                                            <input type="datetime-local" id="showTimeEnd" class="form-control" onchange="ChangeEndTime(this)" required>
+                                            <span class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3" id="TicketGroupContainer">
+                                        </div>
+                                        <div class="mb-3">
+                                            <button class="btn-showTime fw-bold" onclick="openAddModal('ShowTime1')">Thêm loại vé</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        }
                     </div>
                 </div>
                 <div class="mb-3 w-100 mt-5 d-flex justify-content-center">
@@ -257,12 +413,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="BankNumber" class="form-label">Số tài khoản</label>
-                    <input type="text" class="form-control" id="BankNumber"
+                    <input type="text" class="form-control" value="@Model?.BankNumber" id="BankNumber"
                         oninput="this.value = this.value.replace(/[^0-9]/g,'')" required>
                     </div>
                     <div class="mb-3">
                         <label for="BankName" class="form-label">Tên ngân hàng</label>
-                    <input type="text" id="BankName" class="form-control" required>
+                    <input type="text" id="BankName" value="@Model?.BankName" class="form-control" required>
                     </div>
                 </form>
             </div>
@@ -275,11 +431,12 @@
             <div class="modal-content text-white">
                 <div class="modal-header">
                     <h4 class="text-center text-black fw-bold">Tạo loại vé mới</h4>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form action="" onsubmit="saveTicket(event)">
                         <input type="hidden" value="" id="IdShowTime">
+                        <input type="hidden" value="" id="ticketId">
                         <div class="mb-4 mt-3">
                             <label for="ticketName" class="form-label">Tên vé</label>
                             <input type="text" id="ticketName" class="form-control" name="tkName" required>
@@ -288,10 +445,18 @@
                         <div class="row mb-4">
                             <div class="col-4">
                                 <label for="Price" class="form-label">Giá vé</label>
-                            <input type="text" id="Price" class="form-control" name="price" value="0" oninput="CheckNumber(this)" required>
-                            <div class="invalid-feedback">Vui lòng nhập giá vé</div>
+                                <input type="text" id="Price" class="form-control" name="price" value="0" oninput="CheckNumber(this)" required>
+                                <div class="invalid-feedback">Vui lòng nhập giá vé</div>
                             </div>
                             <div class="col-4" id="dropdown-seatGroup">
+                                @if(Model.EventId >0){
+                                    <label for="SeatGroupId" class="form-label">Chọn nhóm ghế</label>
+                                    <select id="SeatGroupId" class="form-select">
+                                        @foreach(var sgr in Model.SeatingChart.SeatGroups){
+                                            <option value="@sgr.SeatGroupId">@sgr.Name</option>
+                                        }
+                                    </select>
+                                }
                             </div>
                             <div class="col-4">
                                 <label for="MaxTicket" class="form-label">Giới hạn số lượng vé trong 1 lần mua</label>

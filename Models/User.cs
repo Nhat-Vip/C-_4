@@ -13,7 +13,6 @@ public class User
     [MaxLength(11)]
     [Phone]
     public string? PhoneNumber { set; get; }
-    [Required]
     public string? PassWord { set; get; }
     public List<Ticket> Tickets { set; get; } = new();
     public List<Event> Events { set; get; } = new();

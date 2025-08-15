@@ -1,6 +1,6 @@
 @model IEnumerable<Event>
 @foreach(var item in Model){
-    <div class="col event-item">
+    <div class="col-6 col-lg-3 event-item" style="height: max-content;">
         <a asp-action="Details" asp-route-id="@item.EventId" class="text-decoration-none text-black" asp-controller="Event">
             <div class="card event-card h-100 border-0 shadow-sm">
                 <div class="position-relative overflow-hidden rounded-top">

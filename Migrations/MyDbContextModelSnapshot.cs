@@ -539,7 +539,7 @@ namespace ASM_C_4.Migrations
                     b.HasOne("ShowTimeSeat", "ShowTimeSeat")
                         .WithOne("TicketDetail")
                         .HasForeignKey("TicketDetail", "ShowTimeId", "SeatId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ShowTimeSeat");
 

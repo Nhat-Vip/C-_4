@@ -1,0 +1,158 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Quản lý sự kiện - Admin";
+}
+
+<div class="content p-5" style="height: 100vh;">
+    <h2>Quản lý sự kiện</h2>
+    <table id="eventTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên sự kiện</th>
+                <th>Địa điểm</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Loại sự kiện</th>
+                <th>Trạng thái</th>
+                <th>Người tạo</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="eventTableBody"></tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let page = 1;
+        const limit = 10;
+        const tableBody = document.getElementById('eventTableBody');
+
+        async function loadEvents() {
+            try {
+                const response = await fetch('/GetEvents?page=' + page + '&limit=' + limit);
+                if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
+                const data = await response.json();
+                tableBody.innerHTML = '';
+                data.events.forEach(ev => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td>${ev.eventId}</td>
+                            <td>${ev.eventName}</td>
+                            <td>${ev.eventAddress || 'Chưa có'}</td>
+                            <td>${ev.startEvent}</td>
+                            <td>${ev.endDateTime}</td>
+                            <td>${ev.eventType}</td>
+                            <td>${ev.eventStatus}</td>
+                            <td>${ev.userName}</td>
+                            <td>
+                                <button class="btn btn-success btn-sm me-2" onclick="confirmApprove(${ev.eventId})">Duyệt</button>
+                                <button class="btn btn-secondary btn-sm" onclick="confirmCancel(${ev.eventId})">Hủy</button>
+                                <a href="/Event/Details/${ev.eventId}/update" class="btn btn-secondary btn-sm">Chi tiết</a>
+                            </td>
+                        `;
+                    tableBody.appendChild(row);
+                });
+                if (data.events.length === 0 && page > 1) page--;
+            } catch (error) {
+                console.error('Lỗi:', error);
+                tableBody.innerHTML = '<tr><td colspan="9">Lỗi khi tải dữ liệu</td></tr>';
+            }
+        }
+
+        async function approveEvent(EventId) {
+            if (confirm('Bạn có chắc chắn muốn duyệt sự kiện này?')) {
+                try {
+                    const response = await fetch('/UpdateEventStatus', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ EventId, Status: 'Approved' })
+                    });
+                    const data = await response.json();
+                    showSuccess(data.message);
+                    loadEvents();
+                } catch (error) {
+                    console.error('Lỗi:', error);
+                    showError('Lỗi khi duyệt sự kiện');
+                }
+            }
+        }
+
+        async function cancelEvent(eventId) {
+            try {
+                const response = await fetch('/UpdateEventStatus', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ eventId, status: 'Cancel' })
+                });
+                const data = await response.json();
+                showSuccess(data.message);
+                loadEvents();
+            } catch (error) {
+                console.error('Lỗi:', error);
+                showError('Lỗi khi hủy sự kiện');
+            }
+            
+        }
+
+        function confirmApprove(eventId) {
+            Swal.fire({
+                title: 'Bạn có chắc muốn duyệt event này?',
+                text: "Hành động này không thể hoàn tác!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Duyệt',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    approveEvent(eventId);
+                }
+            });
+        }
+
+        function confirmCancel(eventId) {
+            Swal.fire({
+                title: 'Bạn có chắc muốn xóa?',
+                text: "Hành động này không thể hoàn tác!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    cancelEvent(eventId);
+                }
+            });
+        }
+
+        function showError(message) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: message,
+                showConfirmButton: false,
+                timer: 3000,
+                toast: true,
+                position: 'top-end'
+            });
+        }
+        function showSuccess(message) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: message,
+                showConfirmButton: false,
+                timer: 3000,
+                toast: true,
+                position: 'top-end'
+            });
+        }
+        loadEvents();
+    </script>
+}

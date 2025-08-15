@@ -102,7 +102,6 @@
             border-radius: 50%;
             user-select: none;
             cursor: pointer;
-            pointer-events: auto;
         }
         #viewport {
             display: flex;
@@ -125,11 +124,24 @@
         .group-color{
             background-color: var(--bg);
         }
+        .disabled{
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.95;
+        }
     </style>
 }
 @model ListBookingModelView
 @{
     var showTimeSeatId = 0;
+    var isUpdate = false;
+    if(TempData["Method"] != null && TempData["Method"]?.ToString()?.ToLower() == "update"){
+        isUpdate = true;
+    }
+    else if(ViewBag.showTimeSeatId != null && ViewBag.showTimeSeatId != ""){
+        showTimeSeatId = ViewBag.showTimeSeatId;
+    }
+    else
     if(ViewBag.showTimeSeatId == null || ViewBag.showTimeSeatId == ""){
         Console.WriteLine("OOOOOO");
         showTimeSeatId = 0;
@@ -146,7 +158,7 @@
         showTime = Model.ShowTimes.FirstOrDefault(st=>st.Id == showTimeSeatId);
     } *@
 }
-<div class="container-fluid">
+<div class="container-fluid @(isUpdate ? "disabled":"")">
     <div class="row position-relative">
         <div class="seat-container col-12 col-lg-8">
             <h4 class="return"><i class="fa-solid fa-arrow-left"></i>Trở về</h4>
@@ -298,7 +310,7 @@
     </div>
 </div>
 @section Scripts{
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script>
         var listSeatSelected = [];
         var maxTicket = []
@@ -311,7 +323,7 @@
                 </text>
         }
         console.log(maxTicket);
-        const BookSeat = (e)=>{
+        function BookSeat(e){
             if(e.classList.contains("Selected")){
                 e.classList.remove("Selected");
                 const index = listSeatSelected.findIndex(item=>item.Id == e.dataset.seatId);
@@ -335,7 +347,7 @@
 
                 e.classList.add("Selected")
                 const seat = {Name:e.title,SeatId:e.dataset.seatId,grName:e.dataset.groupName
-                ,Price:e.dataset.price,ShowTimeId:e.dataset.showTimeId}
+                ,Price: parseFloat(e.dataset.price.replace(',', '.')), ShowTimeId: e.dataset.showtimeId}
                 listSeatSelected.push(seat);
                 console.log("seat",seat);
                 document.getElementById("selected-ticket").innerHTML = `${listSeatSelected.map(item=> ` ${item.grName} - ${item.Name} `).join(',')}`;
@@ -449,4 +461,5 @@
             });
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 }

@@ -65,31 +65,58 @@ public class EventService : IEventService
 
     public async Task<bool> Delete(int id)
     {
-        try
+        var ev = await _context.Events
+            .Include(e => e.ShowTimes)
+                .ThenInclude(st => st.ShowTimeSeats)
+                    .ThenInclude(sts => sts.TicketDetail)
+            .Include(e => e.ShowTimes)
+                .ThenInclude(st => st.ShowTimeTicketGroups)
+            .Include(e => e.SeatingChart)
+                .ThenInclude(sc => sc!.SeatGroups)
+                    .ThenInclude(sg => sg.Seats)
+            .FirstOrDefaultAsync(e => e.EventId == id);
+
+        if (ev == null) return false;
+
+        // Xóa TicketDetail
+        foreach (var st in ev.ShowTimes)
         {
-            var ev = await _context.Events.FirstOrDefaultAsync(e => e.EventId == id);
-            if (ev != null)
+            foreach (var sts in st.ShowTimeSeats)
             {
-                _context.Events.Remove(ev);
-                await _context.SaveChangesAsync();
-                return true;
+                if (sts.TicketDetail != null)
+                    _context.TicketDetails.Remove(sts.TicketDetail);
             }
-            Console.WriteLine("Khong tim thay Id");
-            return false;
         }
-        catch (DbUpdateException ex)
+
+        // Xóa ShowTimeSeats & ShowTimeTicketGroups
+        foreach (var st in ev.ShowTimes)
         {
-            Console.WriteLine("Loi DB: " + ex.Message);
-            return false;
+            _context.ShowTimeSeats.RemoveRange(st.ShowTimeSeats);
+            _context.ShowTimeTicketGroups.RemoveRange(st.ShowTimeTicketGroups);
         }
-        catch (Exception ex)
+
+        // Xóa ShowTimes
+        _context.ShowTimes.RemoveRange(ev.ShowTimes);
+
+        // Xóa Seats → SeatGroups → SeatingChart
+        if (ev.SeatingChart != null)
         {
-            Console.WriteLine("Loi Khac: " + ex.Message);
-            return false;
+            foreach (var sg in ev.SeatingChart.SeatGroups)
+            {
+                _context.Seats.RemoveRange(sg.Seats);
+            }
+            _context.SeatGroups.RemoveRange(ev.SeatingChart.SeatGroups);
+            _context.SeatingCharts.Remove(ev.SeatingChart);
         }
+
+        // Xóa Event
+        _context.Events.Remove(ev);
+
+        await _context.SaveChangesAsync();
+        return true;
     }
 
-    public async Task<List<Event>> GetAll()
+public async Task<List<Event>> GetAll()
     {
         return await _context.Events.ToListAsync();
     }

@@ -65,40 +65,6 @@ const Previous = () => {
     })
 }
 
-// function loadTickets(status) {
-//         // Gọi API bằng fetch
-//         fetch(`/Ticket/GetTickets?status=${encodeURIComponent(status)}`)
-//             .then(response => {
-//                 if (!response.ok) {
-//                     throw new Error('Network response was not ok');
-//                 }
-//                 return response.json();
-//             })
-//             .then(data => {
-//                 const contentArea = document.getElementById('contentArea');
-//                 // Xóa class active từ tất cả nút
-//                 document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-//                 // Thêm class active cho nút được chọn
-//                 document.querySelector(`.nav-btn[data-status="${status}"]`).classList.add('active');
-
-//                 if (data.Tickets.length === 0) {
-//                     contentArea.innerHTML = `
-//                         <img src="~/images/no-data.png" alt="No data" class="no-data-image">
-//                         <p class="no-data-text">Bạn chưa có vé ${data.Status.toLowerCase()}</p>
-//                     `;
-//                 } else {
-//                     contentArea.innerHTML = `
-//                         <div class="ticket-list">
-//                             ${data.Tickets.map(ticket => `<div class="ticket-item">${ticket.title}</div>`).join('')}
-//                         </div>
-//                     `;
-//                 }
-//             })
-//             .catch(error => {
-//                 console.error('Error fetching data:', error);
-//                 document.getElementById('contentArea').innerHTML = '<p>Có lỗi xảy ra khi tải dữ liệu.</p>';
-//             });
-//     }
 
 // Gán sự kiện click cho các nút
 document.getElementById("UserEvent").querySelectorAll('.nav-btn').forEach(button => {
@@ -108,8 +74,12 @@ document.getElementById("UserEvent").querySelectorAll('.nav-btn').forEach(button
     });
 });
 
+// Mảng lưu trữ tất cả các sự kiện
 var Allevent = [];
-
+// Biến lưu trữ trang hiện tại và kích thước trang
+let eventIndex = 1;
+const pageSize = 4;
+// Hàm tải sự kiện theo trạng thái
 const LoadEvents = async (status)=>{
     await fetch(`/User/GetEvent?status=${status}`)
     .then(res=>{
@@ -133,23 +103,6 @@ const LoadEvents = async (status)=>{
         } else {
             Allevent = data.events;
             RenderEvents();
-            // contentArea.innerHTML = `
-            //         ${data.events.map(ev => `
-            //             <div class="event-card mb-3 rounded-2 w-100 justify-content-between align-items-center d-flex p-3">
-            //                 <div class="d-flex justify-content-center">
-            //                     <img src="${ev.image}" width="150px" alt="">
-            //                     <div class="text-start mx-5">
-            //                         <h4 class="fw-bold">${ev.eventName}</h4>
-            //                         <p>${ev.startEvent}</p>
-            //                     </div>
-            //                 </div>
-            //                 <div>
-            //                     <button class="btn btn-warning"><i class="fa-solid fa-pen-to-square"></i>Sửa</button>
-            //                     <button class="btn btn-danger"><i class="fa-solid fa-trash"></i>Xóa</button>
-            //                 </div>
-            //             </div>
-            //         `).join('')}
-            // `;
         }
     })
     .catch(error => {
@@ -158,8 +111,7 @@ const LoadEvents = async (status)=>{
     });
 };
 
-let eventIndex = 1;
-const pageSize = 4;
+
 const RenderEvents = () => {
     const contentArea = document.getElementById('EventArea');
     const startIndex = (currentPage - 1) * pageSize;
@@ -176,8 +128,8 @@ const RenderEvents = () => {
                     </div>
                 </div>
                 <div>
-                    <button class="btn btn-warning"><i class="fa-solid fa-pen-to-square"></i> Sửa</button>
-                    <button class="btn btn-danger"><i class="fa-solid fa-trash"></i> Xóa</button>
+                    <a href="/Event/Create/${ev.eventId}" class="btn btn-warning ${ev.eventStatus == 2 ? "disabled" :""}"><i class="fa-solid fa-pen-to-square"></i> Sửa</a>
+                    <button class="btn btn-danger ${ev.eventStatus == 2 ? "disabled" : ""}" onclick="Delete(${ev.eventId})"><i class="fa-solid fa-trash"></i> Xóa</button>
                 </div>
             </div>
         `).join('')}
@@ -208,7 +160,35 @@ const ChangePage = (page) => {
     RenderEvents();
 };
 
+const Delete = async (id) =>{
+    const res = await fetch(`/Event/Delete?id=${id}`);
+    if(!res.ok){
+        throw new Error('Network response was not ok');
+    }
+    const data = await res.json();
+    console.log(data);
+    if(data.err != null){
+        showErrorAlert(data.err);
+    }
+    else{
+        showSuccessAlert(data.success);
+    }
+}
 
+const DeleteTicket = async (id) =>{
+    const res = await fetch(`/User/DeleteTicket?id=${id}`);
+    if (!res.ok) {
+        throw new Error('Network response was not ok');
+    }
+    const data = await res.json();
+    console.log(data);
+    if (data.err != null) {
+        showErrorAlert(data.err);
+    }
+    else {
+        showSuccessAlert(data.success);
+    }
+}
 
 // Load ticket
 let page = 1;
@@ -217,15 +197,18 @@ const tableBody = document.getElementById('ticketTableBody');
 const loader = document.getElementById('loader');
 const ticketArea = document.querySelector('#TicketArea');
 let currentStatus = 'All'; // Mặc định trạng thái ban đầu
-
+let ticketData = []; // Biến lưu trữ dữ liệu vé
 const loadMoreTickets = async (status = currentStatus) => {
     console.log(currentStatus);
     loader.style.display = 'block';
     try {
-        const response = await fetch(`User/GetTickets?status=${status}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ page, limit }) // Truyền page và limit trong object
+        console.log("Page",page);
+        console.log("Limit",limit);
+
+        if (page < 1) page = 1;
+        if (limit < 1) limit = 3;
+
+        const response = await fetch(`User/GetTickets?page=${page}&limit=${limit}&status=${status}`, {
         });
 
         if (!response.ok) {
@@ -235,19 +218,8 @@ const loadMoreTickets = async (status = currentStatus) => {
         const data = await response.json();
         console.log(data);
         if (data.tickets && data.tickets.length > 0) {
-            data.tickets.forEach(ticket => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${ticket.eventName || 'Chưa có dữ liệu'}</td>
-                    <td>${ticket.date ? new Date(ticket.date).toLocaleDateString('vi-VN') : 'Chưa có dữ liệu'}</td>
-                    <td>${ticket.location || 'Chưa có dữ liệu'}</td>
-                    <td><span class="status status-${ticket.status === 'Success' ? 'Thành công' : ticket.status === 'Processing' ? 'Đang xử lý' : 'Đã hủy'}">${ticket.status || 'Chưa có trạng thái'}</span></td>
-                    <td>${ticket.quantity || 'Chưa có dữ liệu'}</td>
-                    <td>${ticket.total || 'Chưa có dữ liệu'}</td>
-                `;
-                row.addEventListener('click', () => openModal(ticket));
-                tableBody.appendChild(row);
-            });
+            ticketData = data.tickets; // Cập nhật dữ liệu vé
+            RenderTickets(data);
             loader.style.display = 'none';
             page++;
         } else {
@@ -272,16 +244,53 @@ const observer = new IntersectionObserver((entries) => {
 
 observer.observe(loader);
 
+
+function RenderTickets() {
+    tableBody.innerHTML = `${ticketData.map(tk=>`
+        <tr>
+            <td>${tk.eventName || 'Chưa có dữ liệu'}</td>
+            <td>${tk.date || 'Chưa có dữ liệu'}</td>
+            <td>${tk.location || 'Chưa có dữ liệu'}</td>
+            <td>${tk.status || 'Chưa có trạng thái'}</td>
+            <td>${tk.quantity || 'Chưa có dữ liệu'}</td>
+            <td>${tk.total || 'Chưa có dữ liệu'}</td>
+            <td>
+                <button class="btn btn-primary" onclick='openModal(${JSON.stringify(tk)})'>Chi tiết</button>
+                <button class="btn btn-danger" onclick='DeleteTicket(${tk.ticketId})'>Hủy vé</button>
+            </td>
+
+        `).join('')}`; // Render dữ liệu vé
+   
+}
+
 // Modal
 function openModal(ticket) {
-    document.getElementById('modalEvent').textContent = ticket.event || 'Chưa có dữ liệu';
-    document.getElementById('modalDate').textContent = ticket.date ? new Date(ticket.date).toLocaleDateString('vi-VN') : 'Chưa có dữ liệu';
+    document.getElementById('modalEvent').textContent = ticket.eventName || 'Chưa có dữ liệu';
+    document.getElementById('modalDate').textContent = ticket.date || 'Chưa có dữ liệu';
     document.getElementById('modalLocation').textContent = ticket.location || 'Chưa có dữ liệu';
     document.getElementById('modalStatus').textContent = ticket.status || 'Chưa có trạng thái';
-    document.getElementById('modalTicketType').textContent = ticket.type || 'Chưa có dữ liệu';
-    document.getElementById('modalSeatCode').textContent = ticket.seat || 'Chưa có dữ liệu';
+    document.getElementById('modalQuantity').textContent = ticket.quantity || 'Chưa có dữ liệu';
+    document.getElementById('modalTotal').textContent = ticket.total || 'Chưa có dữ liệu';
+
+    // Hiển thị danh sách ticketDetails
+    const ticketDetailsList = document.getElementById('modalTicketDetails');
+    ticketDetailsList.innerHTML = ''; // Xóa nội dung cũ
+    if (ticket.ticketDetails && ticket.ticketDetails.length > 0) {
+        ticket.ticketDetails.forEach(detail => {
+            const li = document.createElement('li');
+            li.textContent = `Ticket Detail ID: ${detail.ticketDetailId}, Ghế: ${detail.seatId}, Thời gian: ${detail.showTimeId}`;
+            ticketDetailsList.appendChild(li);
+        });
+    } else {
+        const li = document.createElement('li');
+        li.textContent = 'Không có chi tiết vé';
+        ticketDetailsList.appendChild(li);
+    }
+
     new bootstrap.Modal(document.getElementById('ticketModal')).show();
 }
+
+
 
 // Filter tickets by status
 document.getElementById('TicketMenu').addEventListener('click', (e) => {
@@ -300,3 +309,25 @@ document.getElementById('TicketMenu').addEventListener('click', (e) => {
 
 // Tải lần đầu
 loadMoreTickets(currentStatus);
+
+
+function showErrorAlert(err) {
+    Swal.fire({
+        icon: 'error',
+        title: err,
+        showConfirmButton: false,
+        timer: 2000,
+        toast: true,
+        position: 'top'
+    });
+}
+function showSuccessAlert(ms) {
+    Swal.fire({
+        icon: 'success',
+        title: ms,
+        showConfirmButton: false,
+        timer: 2000,
+        toast: true,
+        position: 'top'
+    });
+}

@@ -46,6 +46,7 @@ const openAddModal = (id) => {
     }
 
     const modalElement = document.getElementById('CreateTicket');
+    modalElement.querySelector("#ticketId").value = "";
     modalInstance = new bootstrap.Modal(modalElement);
     document.getElementById("IdShowTime").value = id;
     modalInstance.show();
@@ -56,22 +57,38 @@ const updateTicket = (e) =>{
     const modalElement = document.getElementById('CreateTicket');
     const modal = new bootstrap.Modal(modalElement);
 
+    const container = e.closest(".collapse");
     const parent = e.closest(".ticket");
 
     document.getElementById("ticketName").value = parent.querySelector("#TicketName").value;
     document.getElementById("Price").value = parent.querySelector("#TicketPrice").value;
-    document.getElementById("SeatGroup").value = parent.querySelector("#SeatGroup").value;
+    document.getElementById("SeatGroupId").value = parent.querySelector("#SeatGroup").value;
     document.getElementById("MaxTicket").value = parent.querySelector("#MaxTicket").value;
     document.getElementById("TicketSaleStart").value = parent.querySelector("#StartTime").value;
     document.getElementById("TicketSaleEnd").value = parent.querySelector("#EndTime").value;
+    document.querySelector("#ticketId").value = `#${container.id} #${parent.id}`;
 
     modalInstance.show();
-
-
 }   
 
 const saveTicket = (e) => {
     e.preventDefault();
+
+    const ticketId = document.getElementById("ticketId").value;
+    if(ticketId.trim() != "" && ticketId != null){
+        console.log("ticketId: ", ticketId);
+        const ticket = document.querySelector(ticketId);
+        ticket.children[0].innerHTML = `<i class="fa-solid fa-ticket"></i>${document.getElementById("ticketName").value}`;
+        ticket.querySelector("#TicketName").value = document.getElementById("ticketName").value;
+        ticket.querySelector("#TicketPrice").value = document.getElementById("Price").value;
+        ticket.querySelector("#SeatGroup").value = document.getElementById("SeatGroupId").value;
+        ticket.querySelector("#MaxTicket").value = document.getElementById("MaxTicket").value;
+        ticket.querySelector("#StartTime").value = document.getElementById("TicketSaleStart").value;
+        ticket.querySelector("#EndTime").value = document.getElementById("TicketSaleEnd").value;
+        modalInstance.hide();
+        return;
+    }
+
     const id = document.getElementById("IdShowTime").value;
     const tkName = document.getElementById("ticketName").value;
     const price = document.getElementById("Price").value;
@@ -101,8 +118,8 @@ const saveTicket = (e) => {
     }
     
     const checkSGr = parent.querySelectorAll(".ticket #SeatGroup");
-    console.log(checkSGr);
-    console.log(seatGruop);
+    // console.log(checkSGr);
+    // console.log(seatGruop);
     const hasExits = Array.from(checkSGr).find(gr => gr.value == seatGruop);
     if(hasExits != null){
         console.log(hasExits);
@@ -112,11 +129,11 @@ const saveTicket = (e) => {
     const container = document.querySelector(`#${id} #TicketGroupContainer`);
     // console.log(container);
     const ticketHtml = `
-                <div class="d-flex mb-3 ticket justify-content-between align-items-center p-2 rounded-3" style="box-shadow: 0 0 5px black;">
+                <div class="d-flex mb-3 ticket justify-content-between align-items-center p-2 rounded-3" id="ticket${seatGruop}" style="box-shadow: 0 0 5px black;">
                     <p class="text-black fw-bold m-0"><i class="fa-solid fa-ticket"></i>${tkName}</p>
                     <div>
-                        <button class="btn btn-warning" onclick="updateTicket(this)">Sua</button>
-                        <button class="btn btn-danger">Xoa</button>
+                        <button class="btn btn-warning" onclick="updateTicket(this)">Sửa</button>
+                        <button class="btn btn-danger" onclick="deleteTicket(this)">Xóa</button>
                     </div>
                         <input type="hidden" id="TicketName" value="${tkName}" />
                         <input type="hidden" id="TicketPrice" value="${price}" />
@@ -130,7 +147,7 @@ const saveTicket = (e) => {
     container.insertAdjacentHTML("beforeend", ticketHtml);
 
     ShowTime.innerHTML = formatDateTime(parent.querySelector("#showTimeStart").value);
-    ShowTime.innerHTML += `<p class="text-danger p-0 m-0">${parent.querySelectorAll(".ticket").length} Loại vé</p>`;
+    ShowTime.innerHTML += `<p class="text-black p-0 m-0">${parent.querySelectorAll(".ticket").length} Loại vé</p>`;
 
     // const modalElement = document.getElementById('CreateTicket');
     // const modal = new bootstrap.Modal(modalElement);
@@ -138,6 +155,10 @@ const saveTicket = (e) => {
     allowSaveST = true;
 }
 
+const deleteTicket = (e) => {
+    const ticket = e.closest(".ticket");
+    ticket.remove();
+}
 const AddShowTime = () => {
     const container = document.getElementById("ShowTime");
     allowSaveST = false;
@@ -147,7 +168,7 @@ const AddShowTime = () => {
             <div class="card mb-3">
                 <div class="card-header d-flex justify-content-between">
                     <a href="#ShowTime${showTimeIndex}" class="btn w-75 text-start" data-bs-toggle="collapse" >Vui lòng nhập thông tin xuất chiếu</a>
-                    <button type="button" class=" btn btn-danger" style="height: max-content;">Xóa</button>
+                    <button type="button" class=" btn btn-danger" style="height: max-content;" onclick="DeleteShowTime(this)">Xóa</button>
                 </div>
                 <div class="collapse" id="ShowTime${showTimeIndex}" data-bs-parent="#ShowTime">
                     <div class="card-body">
@@ -205,6 +226,10 @@ const ShowTimeStart = (e, id) => {
     }
 }
 
+const DeleteShowTime = (e) => {
+    const parent = e.closest(".card");
+    parent.remove();
+}
 
 const ChangeEndTime = (e)=>{
     const parent = e.closest(".d-flex");
@@ -270,7 +295,7 @@ const validateEventInfo = () =>{
     const startDay = parseInt(String(startd.getDate()).padStart(2, '0'));
     const endDay = parseInt(String(endd.getDate()).padStart(2, '0'));
 
-    if(startEvent.value >= endEvent.value && startEvent.value != "" || startHour+2 <= endHour){
+    if(startEvent.value >= endEvent.value && startEvent.value != "" || startHour+2 >= endHour){
         startEvent.nextElementSibling.innerHTML = "Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc ít nhất 2 tiếng";
         hasError = true;
     }
@@ -309,6 +334,7 @@ const SaveEventInfo = async () => {
     }
 
     const formData = new FormData();
+    console.log("EventId: ", document.getElementById("eventId").value);
     formData.append("EventId",document.getElementById("eventId").value ?? null);
     formData.append("EventName", document.getElementById("EventName").value);
     formData.append("ImageFile",file);
@@ -401,6 +427,7 @@ const SaveSeatingChart = async () =>{
 
     document.getElementById("dropdown-seatGroup").innerHTML = html;
     maxGroupTicket = document.getElementById("SeatGroupId").options.length;
+    console.log("MaxGroupTicket: ",maxGroupTicket);
     console.log("Luu seating chart thanh cong");
     tabIndex++;
 }
@@ -412,6 +439,10 @@ const SaveShowTime = async () =>{
     // let showTimeCurrent = 1;
     const eventId = document.getElementById("eventId").value;
     const listShowTime = [];
+    if(AllShowTime.length == 0){
+        showErrorAlert("Vui lòng nhập ít nhất 1 xuất chiếu");
+        return;
+    }
     AllShowTime.forEach(st=>{
 
         if (st.querySelector("#showTimeStart").value == ""
@@ -420,8 +451,8 @@ const SaveShowTime = async () =>{
             allowSave = false;
             return;
         }
-        if(st.querySelector(".ticket") == null){
-            showErrorAlert("Vui Lòng nhập ít nhất 1 vé cho từng xuất chiếu");
+        if(st.querySelectorAll(".ticket").length < maxGroupTicket){
+            showErrorAlert(`Vui Lòng nhập ${maxGroupTicket} loại vé cho nhóm ghế của từng xuất chiếu`);
             allowSave = false;
             return;
         }
@@ -433,7 +464,7 @@ const SaveShowTime = async () =>{
         };
         st.querySelectorAll(".ticket").forEach(tk=>{
             const ticketData = {
-                Price:tk.querySelector("#TicketPrice").value,
+                Price: parseFloat(tk.querySelector("#TicketPrice").value.replace(",", ".")),
                 TicketSaleStart:tk.querySelector("#StartTime").value,
                 TicketSaleEnd:tk.querySelector("#EndTime").value,
                 SeatGroupId: tk.querySelector("#SeatGroup").value,
@@ -441,12 +472,13 @@ const SaveShowTime = async () =>{
                 MaxTicket: tk.querySelector("#MaxTicket").value
                 
             }
+            console.log("TicketData: ",ticketData);
             showTimeData.ShowTimeTicketGroups.push(ticketData);
         })
         listShowTime.push(showTimeData);
     });
     if(!allowSave){
-        tabIndex--;
+        // tabIndex--;
         return;
     }
     console.log("ShowTime: ",listShowTime);

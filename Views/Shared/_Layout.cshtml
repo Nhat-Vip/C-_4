@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,7 +9,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/fontawesome-free-7.0.0-web/css/all.css">
-    <link rel="stylesheet" href="~/ASM_C_4.styles.css" asp-append-version="true" />
+    @* <link rel="stylesheet" href="~/ASM_C_4.styles.css" asp-append-version="true" /> *@
     @RenderSection("Styles", required: false)
 </head>
 <body>
@@ -52,12 +53,13 @@
                         @if(User.IsInRole("Admin")) {
                             <button class="btn border-0" data-bs-toggle="dropdown"
                                 aria-expanded="false">
-                                <img src="images/dutcuc.png" width="30px" class="rounded-circle" alt="">
+                                <img src="@User.FindFirstValue(ClaimTypes.Uri)" width="30px" class="rounded-circle" alt="">
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a asp-action="Index" asp-controller="User" class="dropdown-item">Thông tin cá nhân</a></li>
                                 <li><a asp-action="Create" asp-controller="Event" class="dropdown-item">Tạo sự kiện</a></li>
-                                <li><a asp-action="Dashboad" asp-controller="Admin" class="dropdown-item">Dashboard</a></li>
+                                <li><a asp-action="Dashboard" asp-controller="Admin" class="dropdown-item">Dashboard</a>
+                                </li>
                                 <li><hr href="#" class="dropdown-divider"></hr></li>
                                 <li><a asp-action="LogOut" asp-controller="Account" class="dropdown-item">Đăng xuất</a></li>
                             </ul>
@@ -68,7 +70,8 @@
                         @if(User.IsInRole("User")){
                             <button class="btn border-0 dropdown-toggle btn-success" data-bs-toggle="dropdown"
                                 aria-expanded="false">
-                                <img src="images/dutcuc.png" width="50px" class="account-img rounded-circle" alt="">
+                                <img src="@User.FindFirstValue(ClaimTypes.Uri)" width="50px"
+                                    class="account-img rounded-circle" alt="">
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a asp-action="Index" asp-controller="User" class="dropdown-item">Thông tin cá
@@ -104,12 +107,13 @@
                                 if (User.IsInRole("Admin")){
                                     <div class="dropdown">
                                         <button class="btn btn-light p-0 border-0 rounded-circle" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <img src="/Images/dutcuc.png" width="30px" style="width: 30px !important;" class="rounded-circle" alt="">
+                                            <img src="@(User.FindFirstValue(ClaimTypes.Uri))" width="30px"
+                                                style="width: 30px !important; object-fit: cover; height: 30px !important" class="rounded-circle" alt="">
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-end">
                                             <li><a asp-action="Index" asp-controller="User" class="dropdown-item">Profile</a></li>
                                             @* <li><a asp-action="Index" asp-controller="" class="dropdown-item">MyTicket</a></li> *@
-                                            <li><a asp-action="Index" asp-controller="Admin" class="dropdown-item">Dashboard</a></li>
+                                            <li><a asp-action="Dashboard" asp-controller="Admin" class="dropdown-item">Dashboard</a></li>
                                             <li>
                                                 <hr href="#" class="dropdown-divider">
                                                 </hr>
@@ -124,7 +128,7 @@
                                 else if(User.IsInRole("User")){
                                     <div class="dropdown">
                                         <button class="btn btn-light" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <img src="images/dutcuc.png" width="30px" class="rounded-circle" alt="">
+                                            <img src="@User.FindFirstValue(ClaimTypes.Uri)" width="30px" class="rounded-circle" alt="">
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li><a asp-action="Index" asp-controller="User" class="dropdown-item">Profile</a></li>
@@ -173,6 +177,8 @@
         </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

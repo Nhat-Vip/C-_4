@@ -60,11 +60,26 @@ public class EventController : Controller
         _event = @event;
     }
     [Authorize]
-    public IActionResult Create()
+    [Route("Event/Create/{eventId?}")]
+    public IActionResult Create(int? eventId)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         ViewBag.UserId = userId;
-        return View();
+        var ev = new Event();
+        if (eventId.HasValue)
+        {
+            ev = _context.Events.Include(e => e.SeatingChart)
+                                 .ThenInclude(s => s!.SeatGroups)
+                                    .ThenInclude(s => s.Seats)
+                                .Include(e => e.ShowTimes)
+                                    .ThenInclude(s => s.ShowTimeTicketGroups)
+                                .FirstOrDefault(e => e.EventId == eventId.Value);
+            if (ev == null)
+            {
+                return NotFound();
+            }
+        }
+        return View(ev);
     }
 
     [HttpPost]
@@ -72,23 +87,24 @@ public class EventController : Controller
     {
         try
         {
-            var e = await _event.GetById(ev.EventId);
-            if (e != null)
+            // var e = await _event.GetById(ev.EventId);
+            if (ev.EventId > 0)
             {
-                e.EventName = ev.EventName;
-                e.Description = ev.Description;
-                e.StartEvent = ev.StartEvent;
-                e.EndDateTime = ev.EndDateTime;
-                e.EventType = ev.EventType;
-                e.EventAddress = ev.EventAddress;
+                // e.EventName = ev.EventName;
+                // e.Description = ev.Description;
+                // e.StartEvent = ev.StartEvent;
+                // e.EndDateTime = ev.EndDateTime;
+                // e.EventType = ev.EventType;
+                // e.EventAddress = ev.EventAddress;
 
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
-                    e.Image = await SaveImg(ImageFile);
+                    ev.Image = await SaveImg(ImageFile);
                 }
-
+                _context.Events.Update(ev);
                 await _context.SaveChangesAsync();
-                return Ok(new { eventId = e.EventId });
+                Console.WriteLine("Cập nhật sự kiện thành công");
+                return Ok(new { eventId = ev.EventId });
             }
 
             if (ev == null)
@@ -140,30 +156,65 @@ public class EventController : Controller
 
         if (seatingChart != null)
         {
-            // Cập nhật các thuộc tính của SeatingChart
-            seatingChart.PosX = stc.PosX;
-            seatingChart.PosY = stc.PosY;
+            // // Cập nhật các thuộc tính của SeatingChart
+            // seatingChart.PosX = stc.PosX;
+            // seatingChart.PosY = stc.PosY;
 
-            // Xóa các SeatGroup cũ (bao gồm Seats liên quan)
-            foreach (var oldSeatGroup in seatingChart.SeatGroups)
-            {
-                _context.Seats.RemoveRange(oldSeatGroup.Seats); // Xóa Seats của SeatGroup
-            }
-            _context.SeatGroups.RemoveRange(seatingChart.SeatGroups); // Xóa SeatGroups
+            // // Xóa các SeatGroup cũ (bao gồm Seats liên quan)
+            // foreach (var oldSeatGroup in seatingChart.SeatGroups)
+            // {
+            //     _context.Seats.RemoveRange(oldSeatGroup.Seats); // Xóa Seats của SeatGroup
+            // }
+            // _context.SeatGroups.RemoveRange(seatingChart.SeatGroups); // Xóa SeatGroups
 
-            // Thêm các SeatGroup mới từ stc
-            seatingChart.SeatGroups = stc.SeatGroups ?? new List<SeatGroup>();
-            foreach (var seatGroup in seatingChart.SeatGroups)
-            {
-                seatGroup.SeatingChartId = seatingChart.SeatingChartId; // Gán khóa ngoại
-                foreach (var seat in seatGroup.Seats)
-                {
-                    seat.SeatGroupId = seatGroup.SeatGroupId; // Gán khóa ngoại
-                }
-            }
+            // // Thêm các SeatGroup mới từ stc
+            // seatingChart.SeatGroups = stc.SeatGroups ?? new List<SeatGroup>();
+            // foreach (var seatGroup in seatingChart.SeatGroups)
+            // {
+            //     seatGroup.SeatingChartId = seatingChart.SeatingChartId; // Gán khóa ngoại
+            //     foreach (var seat in seatGroup.Seats)
+            //     {
+            //         seat.SeatGroupId = seatGroup.SeatGroupId; // Gán khóa ngoại
+            //     }
+            // }
 
             // Cập nhật SeatingChart
             _context.SeatingCharts.Update(seatingChart);
+
+            foreach (var seatGroup in stc.SeatGroups)
+            {
+                // Kiểm tra xem SeatGroup đã tồn tại trong SeatingChart hay chưa
+                var existingSeatGroup = seatingChart.SeatGroups.FirstOrDefault(sg => sg.SeatGroupId == seatGroup.SeatGroupId);
+                if (existingSeatGroup != null)
+                {
+                    // Cập nhật SeatGroup hiện tại
+                    existingSeatGroup.Name = seatGroup.Name;
+                    existingSeatGroup.PosX = seatGroup.PosX;
+                    existingSeatGroup.PosY = seatGroup.PosY;
+
+                    // Cập nhật Seats trong SeatGroup
+                    foreach (var seat in seatGroup.Seats)
+                    {
+                        var existingSeat = existingSeatGroup.Seats.FirstOrDefault(s => s.SeatId == seat.SeatId);
+                        if (existingSeat != null)
+                        {
+                            // existingSeat.SeatName = seat.SeatName;
+                            existingSeat.SeatGroup = seatGroup;
+                        }
+                        else
+                        {
+                            // Thêm Seat mới nếu không tồn tại
+                            existingSeatGroup.Seats.Add(seat);
+                        }
+                    }
+                }
+                else
+                {
+                    // Thêm SeatGroup mới nếu không tồn tại
+                    seatingChart.SeatGroups.Add(seatGroup);
+                }
+            }
+
             await _context.SaveChangesAsync();
 
             // Lấy danh sách SeatGroup để trả về dropdown
@@ -220,126 +271,91 @@ public class EventController : Controller
     {
         try
         {
-            if (showTimes == null)
+            if (showTimes == null || !showTimes.Any())
                 return BadRequest("Dữ liệu gửi lên không hợp lệ");
+
+            var eventEntity = await _context.ShowTimes
+                            .Where(st => st.EventId == showTimes.First().EventId)
+                            .Include(st => st.ShowTimeSeats)
+                            .Include(st => st.ShowTimeTicketGroups)
+                            .ToListAsync();
+
+            if (eventEntity.Any())
+            {
+                // Xóa các ShowTime cũ và các liên kết với ShowTimeSeats và ShowTimeTicketGroups
+                Console.WriteLine("Xóa các ShowTime cũ và các liên kết với ShowTimeSeats và ShowTimeTicketGroups");
+                var seatsToDelete = eventEntity.SelectMany(s => s.ShowTimeSeats).ToList();
+                var groupsToDelete = eventEntity.SelectMany(s => s.ShowTimeTicketGroups).ToList();
+
+                _context.ShowTimeSeats.RemoveRange(seatsToDelete);
+                _context.ShowTimeTicketGroups.RemoveRange(groupsToDelete);
+                _context.ShowTimes.RemoveRange(eventEntity);
+
+                await _context.SaveChangesAsync();
+            }
+
 
             foreach (var st in showTimes)
             {
                 Console.WriteLine($"ShowTime FE: Id={st.Id}, EventId={st.EventId}, Start={st.StartTime}, End={st.EndTime}, TicketGroupCount={st.ShowTimeTicketGroups?.Count}");
                 ShowTime showTime;
 
-                if (st.Id > 0) // UPDATE
+                // INSERT mới
+
+                showTime = new ShowTime
                 {
-                    Console.WriteLine("Cap Nhat Show Time");
-                    showTime = (await _context.ShowTimes
-                        .Include(x => x.ShowTimeSeats)
-                        .Include(x => x.ShowTimeTicketGroups)
-                        .FirstOrDefaultAsync(x => x.Id == st.Id))!;
+                    EventId = st.EventId,
+                    StartTime = st.StartTime,
+                    EndTime = st.EndTime
+                };
 
-                    if (showTime == null) continue;
+                _context.ShowTimes.Add(showTime);
+                await _context.SaveChangesAsync(); // Lưu để có Id cho ShowTime
 
-                    // Cập nhật thời gian
-                    showTime.StartTime = st.StartTime;
-                    showTime.EndTime = st.EndTime;
 
-                    // Xóa toàn bộ ticket groups & seats cũ
-                    _context.ShowTimeTicketGroups.RemoveRange(showTime.ShowTimeTicketGroups);
-                    _context.ShowTimeSeats.RemoveRange(showTime.ShowTimeSeats);
 
-                    // Lấy seats từ seating chart
-                    var listSeats = await _context.SeatingCharts
-                        .Include(sc => sc.SeatGroups)
-                        .ThenInclude(sg => sg.Seats)
-                        .FirstOrDefaultAsync(sc => sc.EventId == st.EventId);
-
-                    if (listSeats != null)
+                foreach (var tg in st.ShowTimeTicketGroups)
+                {
+                    Console.WriteLine($"ShowTimeTicketGroup FE: Id={tg.SeatGroupId}, ShowTimeId={showTime.Id}, Price={tg.Price}, Name={tg.Name}, MaxTicket={tg.MaxTicket}, SeatGroupId={tg.SeatGroupId}");
+                    _context.ShowTimeTicketGroups.Add(new ShowTimeTicketGroup
                     {
-                        foreach (var seatGroup in listSeats.SeatGroups)
-                        {
-                            foreach (var seat in seatGroup.Seats)
-                            {
-                                _context.ShowTimeSeats.Add(new ShowTimeSeat
-                                {
-                                    SeatId = seat.SeatId,
-                                    ShowTimeId = showTime.Id,
-                                    IsBooked = false
-                                });
-                            }
-                        }
-                    }
+                        ShowTimeId = showTime.Id,
+                        Price = tg.Price,
+                        Name = tg.Name,
+                        MaxTicket = tg.MaxTicket,
+                        SeatGroupId = tg.SeatGroupId,
+                        TicketSaleStart = tg.TicketSaleStart,
+                        TicketSaleEnd = tg.TicketSaleEnd
+                    });
+                    await _context.SaveChangesAsync();
 
-                    // Thêm ticket groups mới
-                    foreach (var tg in st.ShowTimeTicketGroups)
-                    {
-                        _context.ShowTimeTicketGroups.Add(new ShowTimeTicketGroup
-                        {
-                            ShowTimeId = showTime.Id,
-                            Price = tg.Price,
-                            Name = tg.Name,
-                            MaxTicket = tg.MaxTicket,
-                            SeatGroupId = tg.SeatGroupId,
-                            TicketSaleStart = tg.TicketSaleStart,
-                            TicketSaleEnd = tg.TicketSaleEnd
-                        });
-                    }
+                    Console.WriteLine("TickgetGroupId: " + tg.SeatGroupId);
                 }
-                else // INSERT mới
+
+                // Lấy seats
+                var listSeats = await _context.SeatingCharts
+                    .Include(sc => sc.SeatGroups)
+                    .ThenInclude(sg => sg.Seats)
+                    .FirstOrDefaultAsync(sc => sc.EventId == st.EventId);
+
+                if (listSeats != null)
                 {
-                    showTime = new ShowTime
+                    foreach (var seatGroup in listSeats.SeatGroups)
                     {
-                        EventId = st.EventId,
-                        StartTime = st.StartTime,
-                        EndTime = st.EndTime
-                    };
-
-                    _context.ShowTimes.Add(showTime);
-                    await _context.SaveChangesAsync(); // Lưu để có Id cho ShowTime
-
-
-
-                    foreach (var tg in st.ShowTimeTicketGroups)
-                    {
-                        _context.ShowTimeTicketGroups.Add(new ShowTimeTicketGroup
+                        foreach (var seat in seatGroup.Seats)
                         {
-                            ShowTimeId = showTime.Id,
-                            Price = tg.Price,
-                            Name = tg.Name,
-                            MaxTicket = tg.MaxTicket,
-                            SeatGroupId = tg.SeatGroupId,
-                            TicketSaleStart = tg.TicketSaleStart,
-                            TicketSaleEnd = tg.TicketSaleEnd
-                        });
-                        await _context.SaveChangesAsync();
-
-                        Console.WriteLine("TickgetGroupId: " + tg.SeatGroupId);
-                    }
-
-                    // Lấy seats
-                    var listSeats = await _context.SeatingCharts
-                        .Include(sc => sc.SeatGroups)
-                        .ThenInclude(sg => sg.Seats)
-                        .FirstOrDefaultAsync(sc => sc.EventId == st.EventId);
-
-                    if (listSeats != null)
-                    {
-                        foreach (var seatGroup in listSeats.SeatGroups)
-                        {
-                            foreach (var seat in seatGroup.Seats)
+                            _context.ShowTimeSeats.Add(new ShowTimeSeat
                             {
-                                _context.ShowTimeSeats.Add(new ShowTimeSeat
-                                {
-                                    SeatId = seat.SeatId,
-                                    ShowTimeId = showTime.Id,
-                                    IsBooked = false
-                                });
-                            }
+                                SeatId = seat.SeatId,
+                                ShowTimeId = showTime.Id,
+                                IsBooked = false
+                            });
                         }
                     }
                 }
-                await _context.SaveChangesAsync();
             }
+            await _context.SaveChangesAsync();
 
-            
             return Ok(new { message = "Success" });
         }
         catch (DbUpdateException ex)
@@ -365,8 +381,14 @@ public class EventController : Controller
         await _context.SaveChangesAsync();
         return Ok(new { message = "Success" });
     }
-    public async Task<IActionResult> Details(int id)
+    [Authorize]
+    [Route("Event/Details/{id}/{method?}")]
+    public async Task<IActionResult> Details(int id, string? method)
     {
+        if (method != null && method.ToLower() == "update")
+        {
+            TempData["Method"] = "Update";
+        }
         var ev = await _context.Events
                     .Include(e => e.ShowTimes)
                         .ThenInclude(e => e.ShowTimeTicketGroups)
@@ -382,8 +404,13 @@ public class EventController : Controller
         Console.WriteLine("Detail:" + ev);
         return View(ev);
     }
-    public async Task<IActionResult> BookingTicket(int id,int stId)
+    [Authorize]
+    public async Task<IActionResult> BookingTicket(int id, int stId,string method)
     {
+        if (method != null && method.ToLower() == "update")
+        {
+            TempData["Method"] = "Update";
+        }
         var bookingModel = new ListBookingModelView();
         var ev = await _context.Events.FirstOrDefaultAsync(e => e.EventId == id);
         var seatingChart = await _context.SeatingCharts
@@ -396,18 +423,19 @@ public class EventController : Controller
         {
             showTimes = await _context.ShowTimes
                     .Include(st => st.ShowTimeTicketGroups)
-                    .Include(st=>st.ShowTimeSeats)
+                    .Include(st => st.ShowTimeSeats)
                     .Where(st => st.EventId == id && st.ShowTimeTicketGroups.Any())
                     .FirstOrDefaultAsync();
 
         }
-        else {
-            
+        else
+        {
 
-         showTimes = await _context.ShowTimes
-                                        .Include(st => st.ShowTimeTicketGroups)
-                                        .Include(st => st.ShowTimeSeats)
-                                        .FirstOrDefaultAsync(st => st.EventId == id && st.Id == stId);
+
+            showTimes = await _context.ShowTimes
+                                           .Include(st => st.ShowTimeTicketGroups)
+                                           .Include(st => st.ShowTimeSeats)
+                                           .FirstOrDefaultAsync(st => st.EventId == id && st.Id == stId);
         }
         bookingModel._event = ev;
         bookingModel.SeatingChart = seatingChart;
@@ -430,14 +458,6 @@ public class EventController : Controller
         .Where(s => seatIds!.Contains(s.SeatId))
         .ToListAsync();
 
-        // Console.WriteLine("seatIds: " + string.Join(",", seatIds));
-
-        // Console.WriteLine("seatEntiti"+seatEntities);
-        // if (seatEntities.Count <= 0)
-        // {
-        //     Console.WriteLine("Not found");
-        //     return NotFound();
-        // }
         TempData["EventId"] = id;
         foreach (var seat in seatEntities)
         {
@@ -456,6 +476,20 @@ public class EventController : Controller
 
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var deleteValid = await _event.Delete(id);
+        if (deleteValid)
+        {
+            return Json(new { success = "Xóa thành công" });
+        }
+        else
+        {
+            return Json(new { err = "Xóa không thành công" });
+
+        }
+    }
     public async Task<string> SaveImg(IFormFile file)
     {
         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images");

@@ -1,18 +1,4 @@
-@* @{
-    ViewData["Title"] = "Home Page";
 
-    var eventsData = new[]
-    {
-        new { Id=1, Image="Images/1.jpg", Category="Concert", Location="Hà Nội", Title="THIÊN LÝ ƠI", Date="12/08/2025", Price="200.000 VNĐ" },
-        new { Id=2, Image="Images/2.jpg", Category="Concert", Location="TP HCM", Title="ĐÊM NHẠC HOA", Date="15/08/2025", Price="350.000 VNĐ" },
-        new { Id=3, Image="Images/images.jpg", Category="Sport", Location="Đà Nẵng", Title="GIẢI CHẠY BÃI BIỂN", Date="20/08/2025", Price="150.000 VNĐ" },
-        new { Id=4, Image="Images/4.jpg", Category="Concert", Location="Hải Phòng", Title="KỊCH CỔ TÍCH", Date="25/08/2025", Price="250.000 VNĐ" },
-        new { Id=5, Image="Images/5.jpg", Category="Concert", Location="Cần Thơ", Title="TRIỂN LÃM TRANH", Date="30/08/2025", Price="Free" },
-        new { Id=6, Image="Images/06.jpg", Category="Concert", Location="Huế", Title="LỄ HỘI ẨM THỰC", Date="02/09/2025", Price="100.000 VNĐ" },
-        new { Id=7, Image="Images/7.jpg", Category="Sport", Location="Nha Trang", Title="TOUR BIỂN ĐẢO", Date="05/09/2025", Price="1.200.000 VNĐ" },
-        new { Id=8, Image="Images/8.jpg", Category="Concert", Location="Hà Nội", Title="NHẠC HỘI", Date="10/09/2025", Price="Free" }
-    };
-} *@
 @model IEnumerable<Event>
 
 <div class="container">
@@ -25,10 +11,9 @@
     </div>
 
     <!-- Card sự kiện -->
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4" id="events-container">
-        <partial name="_EventPartial" model="Model" ></partial>
-       
-
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4 h-100" id="events-container" style="height: 100vh !important;">
+        <partial name="_EventPartial" model="Model" ></partial>   
+    </div>
 <!-- CSS -->
 @section Styles{
     <style>
@@ -81,7 +66,7 @@
             .then(data => {
                 console.log("API response:", data);
                 if (!data || data.trim() == "") {
-                    container.innerHTML = `<p class="text-center fs-4 fw-bold">Không có event nào</p>`
+                    container.innerHTML = `<p class="text-center w-100 fs-4 fw-bold">Không có event nào</p>`
                 }
                 else {
                     container.innerHTML = data

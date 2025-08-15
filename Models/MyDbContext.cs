@@ -68,7 +68,7 @@ public class MyDbContext : DbContext
         .HasOne(td => td.ShowTimeSeat)
         .WithOne(s => s.TicketDetail)
         .HasForeignKey<TicketDetail>(td =>new { td.ShowTimeId, td.SeatId })
-        .OnDelete(DeleteBehavior.NoAction);
+        .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Payment>()
         .HasOne(pm => pm.Ticket)

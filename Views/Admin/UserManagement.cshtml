@@ -1,0 +1,246 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Quản lý người dùng - Admin";
+}
+
+<div class="content p-5" style="height: 100vh;">
+    <h2>Quản lý người dùng</h2>
+    <button class="btn btn-primary mb-3" onclick="showAddEditModal(null)">Thêm người dùng</button>
+
+    <table id="userTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên</th>
+                <th>Email</th>
+                <th>Số điện thoại</th>
+                <th>Vai trò</th>
+                <th>Ảnh đại diện</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+    </table>
+
+    <!-- Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalLabel">Thêm/Sửa người dùng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <input type="hidden" id="userId">
+                        <div class="mb-3">
+                            <label class="form-label">Tên</label>
+                            <input type="text" class="form-control" id="userName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="tel" class="form-control" id="phoneNumber" oninput="this.value = this.value.replace('/[^0-9]/g','')" maxlength="11">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-control" id="passWord">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Vai trò</label>
+                            <select class="form-select" id="role" required>
+                                <option value="Admin">Admin</option>
+                                <option value="User">User</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ảnh đại diện</label>
+                            <input type="file" class="form-control" accept="image/*" id="avatarFile">
+                            <img id="avatarPreview" src="" class="img-thumbnail mt-2" style="max-height: 100px;" onchange="previewImage(this)">
+
+                        </div>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let page = 1;
+        const limit = 10;
+        const tableBody = document.getElementById('userTableBody');
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('/GetUsers?page=' + page + '&limit=' + limit);
+                if (!response.ok) throw new Error('Lỗi khi tải dữ liệu');
+                const data = await response.json();
+                tableBody.innerHTML = '';
+                data.users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.id= `user-${user.userId}`;
+                    row.innerHTML = `
+                            <td>${user.userId}</td>
+                            <td>${user.userName}</td>
+                            <td>${user.email}</td>
+                            <td>${user.phoneNumber || 'Chưa có'}</td>
+                            <td>${user.role}</td>
+                            <td><img src="${user.avatar}" id="userAvatar" alt="Avatar" style="width: 50px; height: 50px;"></td>
+                            <td>
+                                <button class="btn btn-warning btn-sm me-2" onclick="showAddEditModal(${user.userId})">Sửa</button>
+                                <button class="btn btn-danger btn-sm" onclick="confirmDelete(${user.userId})">Xóa</button>
+                            </td>
+                        `;
+                    tableBody.appendChild(row);
+                });
+                if (data.users.length === 0 && page > 1) page--;
+            } catch (error) {
+                console.error('Lỗi:', error);
+                tableBody.innerHTML = '<tr><td colspan="7">Lỗi khi tải dữ liệu</td></tr>';
+            }
+        }
+
+        function previewImage(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('avatarPreview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('avatarPreview').src = '';
+            }
+        }
+
+        function showAddEditModal(userId) {
+            const modal = new bootstrap.Modal(document.getElementById('userModal'));
+            if (userId) 
+            {
+                const user = document.getElementById(`user-${userId}`);
+                document.getElementById('userId').value = user.children[0].textContent;
+                document.getElementById('userName').value = user.children[1].textContent;
+                document.getElementById('email').value = user.children[2].textContent;
+                document.getElementById('phoneNumber').value = user.children[3].textContent || '';
+                document.getElementById('passWord').value = '';
+                document.getElementById('role').value = user.children[4].textContent;
+                document.getElementById('avatarPreview').src = user.children[5].children[0].src || '';
+                document.getElementById('userModalLabel').textContent = 'Sửa người dùng';
+            } else {
+                document.getElementById('userId').value = '';
+                document.getElementById('userName').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('phoneNumber').value = '';
+                document.getElementById('passWord').value = '';
+                document.getElementById('role').value = 'User';
+                document.getElementById('avatarFile').value = '';
+                document.getElementById('userModalLabel').textContent = 'Thêm người dùng';
+            }
+            modal.show();
+        }
+
+        document.getElementById('userForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('UserId', document.getElementById('userId').value || 0);
+            formData.append('UserName', document.getElementById('userName').value.trim());
+            formData.append('Email', document.getElementById('email').value.trim());
+            formData.append('PhoneNumber', document.getElementById('phoneNumber').value.trim());
+            formData.append('PassWord', document.getElementById('passWord').value.trim());
+            formData.append('Role', document.getElementById('role').value);
+
+            const avatarFile = document.getElementById('avatarFile').files[0];
+            if (avatarFile) {
+                formData.append('AvatarFile', avatarFile);
+            }
+
+            try {
+                const response = await fetch('/SaveUserWithFile', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    showError(result.message || 'Lỗi khi lưu người dùng');
+                    return;
+                }
+
+                showSuccess(result.message);
+                bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+                loadUsers();
+            } catch (error) {
+                console.error('Lỗi:', error);
+                showError('Lỗi khi gửi dữ liệu');
+            }
+        });
+
+        async function deleteUser(userId) {
+            try {
+                const response = await fetch('/DeleteUser/' + userId, { method: 'DELETE' });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    showError(errorData.message || 'Lỗi khi xóa người dùng');
+                    return;
+                }
+                const data = await response.json();
+                showSuccess(data.message);
+                loadUsers();
+            } catch (error) {
+                console.error('Lỗi:', error);
+                showError('Lỗi khi xóa người dùng');
+            }
+        }
+
+
+        function confirmDelete(userId) {
+            Swal.fire({
+                title: 'Bạn có chắc muốn xóa người dùng này ?',
+                text: "Hành động này không thể hoàn tác!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteUser(userId);
+                }
+            });
+        }
+        
+        function showError(message) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: message,
+                showConfirmButton: false,
+                timer: 3000,
+                toast: true,
+                position: 'top-end'
+            });
+        }
+        function showSuccess(message) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: message,
+                showConfirmButton: false,
+                timer: 3000,
+                toast: true,
+                position: 'top-end'
+            });
+        }
+
+        loadUsers();
+    </script>
+}

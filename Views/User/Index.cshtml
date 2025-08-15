@@ -24,12 +24,15 @@
                     role="tab">Thông tin cá nhân</button>
             </li>
             <li class="nav-item mb-4">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#UserTicket" id="tab1" role="tab">Vé của
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#UserTicket" id="tab2" role="tab">Vé của
                     tôi</button>
             </li>
             <li class="nav-item mb-4">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#UserEvent" id="tab1" role="tab" onclick="LoadEvents('ALL')">Sự kiện
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#UserEvent" id="tab3" role="tab" onclick="LoadEvents('All')">Sự kiện
                     của tôi</button>
+            </li>
+            <li class="nav-item mb-4">
+                <a class="nav-link" id="tab4" asp-action="EventRevenue" asp-controller="Report">Doanh thu</a>
             </li>
         </ul>
         <div class="tab-content col-12 col-lg-10 mt-3" id="tabContent">
@@ -41,7 +44,7 @@
                     <div class="mb-3 mt-3">
                         <label for="UserImg" class="form-label position-relative w-100 d-flex mx-auto"
                             style="width: max-content !important; padding: 10px; border-radius: 50%;">
-                            <img src=@(Model.Avatar??"/Images/2.jpg") id="Avatar" class="rounded-circle" style="width: 128px; height: 128px;" alt="">
+                            <img src=@(Model.Avatar??"/Images/default-avatar.jpg") id="Avatar" class="rounded-circle" style="width: 128px; height: 128px;" alt="">
                             <div class="camera">
                                 <i class="fa-solid fa-camera"></i>
                             </div>
@@ -78,15 +81,15 @@
                     <h3 class="fw-bold text-center">Vé của tôi</h3>
                     <hr class="text-white w-100">
                     <div class="nav-buttons" id="TicketMenu">
-                        <button class="nav-btn" data-status="All">Tất cả</button>
+                        <button class="nav-btn active" data-status="All">Tất cả</button>
                         <button class="nav-btn" data-status="Success">Thành công</button>
-                        <button class="nav-btn active" data-status="Processing">Đang xử lý</button>
+                        <button class="nav-btn" data-status="Processing">Đang xử lý</button>
                         <button class="nav-btn" data-status="Cancel">Đã hủy</button>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center" id="TicketArea">
                     <div class="ticket-table-container w-100">
-                        <table class="ticket-table">
+                        <table class="ticket-table" style="max-height:100px !important; overflow: auto;">
                             <thead>
                                 <tr>
                                     <th>Sự kiện</th>
@@ -95,34 +98,11 @@
                                     <th>Trạng thái</th>
                                     <th>Số lượng</th>
                                     <th>Tổng tiền</th>
+                                    <th>Xóa</th>
                                 </tr>
                             </thead>
                             <tbody id="ticketTableBody">
-                                <!-- Dữ liệu sẽ được tải bằng lazy loading -->
-                                @* <tr>
-                                    <td>Hội thảo Công Nghệ 2025</td>
-                                    <td>15/08/2025</td>
-                                    <td>Trung tâm Hội nghị TP.HCM</td>
-                                    <td><span class="status status-pending">Đang xử lý</span></td>
-                                    <td>Vip</td>
-                                    <td>G1</td>
-                                </tr>
-                                <tr>
-                                    <td>Concert Âm Nhạc</td>
-                                    <td>20/08/2025</td>
-                                    <td>Sân vận động Quốc gia</td>
-                                    <td><span class="status status-success">Thành công</span></td>
-                                    <td>Vip</td>
-                                    <td>N1</td>
-                                </tr>
-                                <tr>
-                                    <td>Triển lãm Sáng Tạo</td>
-                                    <td>25/08/2025</td>
-                                    <td>Trung tâm Triển lãm Hà Nội</td>
-                                    <td><span class="status status-cancelled">Đã hủy</span></td>
-                                    <td>Vip</td>
-                                    <td>A1</td>
-                                </tr> *@
+                                <!-- Nội dung sẽ được load bằng AJAX -->
                             </tbody>
                         </table>
                         <div class="loader" id="loader">Đang tải thêm vé...</div>
@@ -134,7 +114,7 @@
                     <h3 class="fw-bold text-center">Sự kiện của tôi</h3>
                     <hr class="text-white w-100">
                     <div class="nav-buttons" id="EventMenu">
-                        <button class="nav-btn active" data-status="ALL">Tất cả</button>
+                        <button class="nav-btn active" data-status="All">Tất cả</button>
                         <button class="nav-btn" data-status="Approved">Đã được duyệt</button>
                         <button class="nav-btn" data-status="Pending">Đang xử lý</button>
                         <button class="nav-btn" data-status="Cancel">Bị từ chối</button>
@@ -157,13 +137,6 @@
                     <!-- Nội dung sẽ được load bằng AJAX -->
                 </div>
                 <ul class="pagination w-100 justify-content-end" id="EventPagination" style="padding-right: 50px;">
-                    @* <li class="page-item"><button class="page-link" onclick="Previous()" id="previous"><i
-                                class="fa-solid fa-chevron-left"></i></button></li>
-                    <li class="page-item"><a class="page-link active" data-page="1" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" data-page="2" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" data-page="3" href="#">3</a></li>
-                    <li class="page-item"><button class="page-link" onclick="Next()" id="next"><i
-                                class="fa-solid fa-chevron-right"></i></button></li> *@
                 </ul>
             </div>
         </div>
@@ -179,13 +152,15 @@
                 <h5 class="modal-title" id="ticketModalLabel">Chi tiết vé</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-black">
                 <p><strong>Sự kiện:</strong> <span id="modalEvent"></span></p>
                 <p><strong>Ngày:</strong> <span id="modalDate"></span></p>
                 <p><strong>Địa điểm:</strong> <span id="modalLocation"></span></p>
                 <p><strong>Trạng thái:</strong> <span id="modalStatus"></span></p>
-                <p><strong>Loại vé:</strong> <span id="modalTicketType"></span></p>
-                <p><strong>Mã ghế:</strong> <span id="modalSeatCode"></span></p>
+                <p><strong>Số lượng:</strong> <span id="modalQuantity"></span></p>
+                <p><strong>Tổng tiền:</strong> <span id="modalTotal"></span></p>
+                <p><strong>Danh sách chi tiết vé:</strong></p>
+                <ul id="modalTicketDetails"></ul>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -194,5 +169,7 @@
     </div>
 </div>
 @section Scripts{
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="/js/UserProfile.js"></script>
 }

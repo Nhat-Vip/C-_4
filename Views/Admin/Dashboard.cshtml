@@ -1,0 +1,96 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Dashboard - Admin";
+}
+@section Styles {
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fa;
+        }
+
+        .sidebar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #343a40;
+            color: #fff;
+            padding-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .sidebar a {
+            color: #fff;
+            padding: 15px 20px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+
+        .sidebar .nav-item.active a {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: #fff;
+            border-bottom: none;
+        }
+    </style>
+}
+
+<div class="position-relative">
+    <div class="sidebar">
+        <h4 class="text-center mb-4">Admin Panel</h4>
+        <div class="nav flex-column">
+            <div
+                class="nav-item @((ViewContext.RouteData.Values["action"]?.ToString() == "UserManagement") ? "active" : "")">
+                <a href="@Url.Action("UserManagement", "Admin")">Quản lý người dùng</a>
+            </div>
+            <div
+                class="nav-item @((ViewContext.RouteData.Values["action"]?.ToString() == "EventManagement") ? "active" : "")">
+                <a href="@Url.Action("EventManagement", "Admin")">Quản lý sự kiện</a>
+            </div>
+            <div class="nav-item">
+                <a href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <h2>Dashboard</h2>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header">Chào mừng, @User.Identity?.Name!</div>
+                    <div class="card-body">
+                        <p>Chọn một mục từ menu bên trái để quản lý.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="/js/userManament.js"></script>
+    <script src="/js/eventManament.js"></script>
+}

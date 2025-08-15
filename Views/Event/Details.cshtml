@@ -159,7 +159,7 @@
     <div class="row p-5">
         <div class="col-5">
             <img src="@Model.Image" class="event-img w-100 mb-3" alt="">
-            <a asp-action="BookingTicket" asp-route-id="@Model.EventId" asp-route-stId="0" asp-controller="Event" class="buy-ticket w-100 fs-4 fw-bold mb-3">Đặt vé</a>
+            <a asp-action="BookingTicket" asp-route-id="@Model.EventId" asp-route-stId="0" asp-route-method="@(TempData["Method"])" asp-controller="Event" class="buy-ticket w-100 fs-4 fw-bold mb-3">Đặt vé</a>
         </div>
         <div class="col-6" style="color: rgb(255, 255, 255);">
             <h4>@Model.EventName</h4>
@@ -170,8 +170,6 @@
                     var ticketGroups = (Model.ShowTimes != null)
                     ? Model.ShowTimes.SelectMany(e => e.ShowTimeTicketGroups ?? new List<ShowTimeTicketGroup>()).ToList()
                     : new List<ShowTimeTicketGroup>();
-                    Console.WriteLine(ticketGroups.Any());
-                    Console.WriteLine(ticketGroups.First());
                     var minPrice = ticketGroups.Any() ? ticketGroups.Min(x => x.Price) : 0;
                     var maxPrice = ticketGroups.Any() ? ticketGroups.Max(x => x.Price) : 0;
                 }
@@ -217,7 +215,7 @@
                             data-bs-toggle="collapse">@st.StartTime.ToString("dd/MM/yyyy HH:mm") -
                             @st.EndTime.ToString("dd/MM/yyyy HH:mm")
                         </a>
-                        <a asp-action="BookingTicket" asp-controller="Event" class="btn col-3 btn-success" style="height: max-content">Mua vé</a>
+                        <a asp-action="BookingTicket" asp-controller="Event" asp-route-id="@Model.EventId" asp-route-stId="@st.Id" asp-route-method="@(TempData["Method"])"                    class="btn col-3 btn-success" style="height: max-content">Mua vé</a>
                     </div>
                     <div id="ShowTime@(st.Id)" class="collapse show" data-bs-parent="#ShowTime">
                         <div class="card-body">

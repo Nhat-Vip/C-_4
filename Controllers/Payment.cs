@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 public class PaymentController : Controller
@@ -16,6 +17,12 @@ public class PaymentController : Controller
 #pragma warning disable CS8604 // Possible null reference argument.
         var seats = JsonConvert.DeserializeObject<List<ShowTimeSeatDto>>(seatsJson);
 #pragma warning restore CS8604 // Possible null reference argument.
+        var ev = _context.Events
+            .FirstOrDefault(e => e.EventId == Convert.ToInt32(TempData["EventId"]));
+        ViewBag.BankName = ev?.BankName;
+        ViewBag.BankNumber = ev?.BankNumber;
+        TempData.Keep("SeatsJson");
+        TempData.Keep("EventId");
         return View(seats);
     }
     [HttpPost]
@@ -26,10 +33,11 @@ public class PaymentController : Controller
         await Task.Delay(2000);
 
         var random = new Random();
-        bool isSuccess = random.Next(0, 2) == 1;
+        bool isSuccess = random.Next(0, 2) == 1; // Giả lập thành công hoặc thất bại ngẫu nhiên
 
         if (isSuccess)
         {
+            Console.WriteLine("Luu ticket hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
             var ticket = new Ticket();
             ticket.Total = seatDtos.Sum(s => s.Price);
             ticket.CreateAt = DateTime.Now;
@@ -44,13 +52,20 @@ public class PaymentController : Controller
             payment.Status = PaymentStatus.Success;
             payment.TicketId = ticket.TicketId;
             _context.Payments.Add(payment);
+            Console.WriteLine("Số lượng seatDtos: " + seatDtos.Count);
             foreach (var item in seatDtos)
             {
-                var TicketDetail = new TicketDetail();
-                TicketDetail.SeatId = item.SeatId;
-                TicketDetail.ShowTimeId = item.ShowTimeId;
-                TicketDetail.TicketId = ticket.TicketId;
-                _context.TicketDetails.Add(TicketDetail);
+                Console.WriteLine("Dang Luu ticket detail");
+                Console.WriteLine("SeatId" + item.SeatId);
+                Console.WriteLine("ShowtimeId" + item.ShowTimeId);
+                Console.WriteLine("Dang Luu ticket detail");
+
+                var ticketDetail = new TicketDetail();
+                ticketDetail.SeatId = item.SeatId;
+                ticketDetail.ShowTimeId = item.ShowTimeId;
+                ticketDetail.TicketId = ticket.TicketId;
+                ticketDetail.Ticket = ticket;
+                _context.TicketDetails.Add(ticketDetail);
             }
             await _context.SaveChangesAsync();
             // Thanh toán thành công → commit
@@ -62,6 +77,20 @@ public class PaymentController : Controller
         {
             // Thanh toán thất bại → rollback
             await transaction.RollbackAsync();
+            Console.WriteLine("Da goiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii2");
+
+            var seatIds = seatDtos?.Select(s => s.SeatId).ToList();
+            var seatEntities = await _context.ShowTimeSeats
+            .Where(s => seatIds!.Contains(s.SeatId))
+            .ToListAsync();
+
+            foreach (var seat in seatEntities)
+            {
+                seat.IsBooked = false;
+            }
+
+            await _context.SaveChangesAsync();
+
             // TempData["Error"] = "Thanh toan that bai";
             return RedirectToAction("PaymentResult", new { success = false });
         }
@@ -74,6 +103,25 @@ public class PaymentController : Controller
             TempData["Message"] = "Thanh toán thất bại";
 
         return View();
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> CancelBooking([FromBody] List<ShowTimeSeatDto> seatDtos)
+    {
+        Console.WriteLine("Da goiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
+        var seatIds = seatDtos?.Select(s => s.SeatId).ToList();
+        var seatEntities = await _context.ShowTimeSeats
+        .Where(s => seatIds!.Contains(s.SeatId))
+        .ToListAsync();
+
+        foreach (var seat in seatEntities)
+        {
+            seat.IsBooked = false;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return Ok();
     }
 
 }

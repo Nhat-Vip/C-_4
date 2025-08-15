@@ -1,4 +1,5 @@
 @using System.Globalization
+@using System.Text.Json
 @model List<ShowTimeSeatDto>
 @{
     var listSeats = Model.GroupBy(s=>s.grName);
@@ -8,8 +9,22 @@
     <style>
         .seat-table{
             max-height: 70vh;
-            overflow-y: scroll;
+            overflow-y: auto;
         }
+        .seat-table::-webkit-scrollbar {
+            display: none; /* Ẩn thanh cuộn */
+        }
+                /* Cho toàn bộ trang */
+        body {
+            overflow: auto;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        /* Cho Chrome, Edge, Safari */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
     </style>
 }
 @if(TempData["Error"]!=null){
@@ -60,17 +75,19 @@
         </table>
 
     </div>
-    <div class="d-flex justify-content-end col-8" >
+    <div class="d-flex justify-content-end col-4" >
 
-        <form method="post" asp-action="Index" class="d-flex flex-column rounded-2 w-50 p-4" style="box-shadow: 0 0 10px rgb(78, 28, 28);">
+        <form method="post" asp-action="Index" onsubmit="isPaid = true" class="d-flex flex-column rounded-2 w-75 p-4" style="box-shadow: 0 0 10px rgb(78, 28, 28);">
+            <img src="https://img.vietqr.io/image/@(ViewBag.BankName)-@(ViewBag.BankNumber)-compact2.png?amount=@(total)" id="QrCode"
+                alt="Qr thanh toán" width="100%" class="mb-3" />
             <span class="fw-bold mb-2 text-end"><strong>Tổng:</strong> @total.ToString("C0",new CultureInfo("vi-VN"))</span>
             @for (int i = 0; i < Model.Count; i++)
             {
-                <input type="hidden" name="seats[@i].SeatId" value="@Model[i].SeatId" />
-                <input type="hidden" name="seats[@i].ShowTimeId" value="@Model[i].ShowTimeId" />
-                <input type="hidden" name="seats[@i].Price" value="@Model[i].Price" />
-                <input type="hidden" name="seats[@i].Name" value="@Model[i].Name" />
-                <input type="hidden" name="seats[@i].grName" value="@Model[i].grName" />
+                <input type="hidden" name="seatDtos[@i].SeatId" value="@Model[i].SeatId" />
+                <input type="hidden" name="seatDtos[@i].ShowTimeId" value="@Model[i].ShowTimeId" />
+                <input type="hidden" name="seatDtos[@i].Price" value="@Model[i].Price" />
+                <input type="hidden" name="seatDtos[@i].Name" value="@Model[i].Name" />
+                <input type="hidden" name="seatDtos[@i].grName" value="@Model[i].grName" />
             }
             <button type="submit" class="btn w-100 btn-success">Xác nhận & Thanh toán</button>
         </form>
@@ -78,3 +95,77 @@
     </div>
 </div>
 
+@section Scripts{
+    <script>
+        var isPaid = false;
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        @* document.querySelector("button[type='submit']").addEventListener("click", function () {
+            isPaid = true; // set trước khi browser unload
+        });
+
+        document.querySelector("form").addEventListener("submit",function (e) {
+            e.preventDefault();
+
+            isPaid = true;
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+
+            Promise.resolve().then(() => {
+                console.log("Submit",isPaid);
+                this.submit();
+            });
+        }); *@
+
+
+
+        function cancelSeatsIfNotPaid() {
+            console.log(isPaid);
+            const data = JSON.stringify(@Html.Raw(JsonSerializer.Serialize(Model)));
+            const blob = new Blob([data], { type: 'application/json' }); // Đặt Content-Type
+            navigator.sendBeacon('/Payment/CancelBooking', blob);
+        }
+
+        function handleBeforeUnload(e) {
+            if (!isPaid) {
+                console.log("User is leaving without payment.");
+                cancelSeatsIfNotPaid();
+            }
+        }
+
+        @* function cancelSeatsIfNotPaid() {
+            Swal.fire({
+                title: 'Bạn có chắc muốn hủy thanh toán?',
+                text: "Việc này sẽ hủy tất cả ghế đã chọn.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Xác nhận',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/Payment/CancelBooking', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(@Model})
+                    }).then(response => response.json())
+                      .then(data => {
+                          if (response.ok) {
+                              window.location.href = '/Home/Index';
+                          } else {
+                              alert(data.message);
+                          }
+                      });
+                }
+            });
+        } *@
+
+        @* window.addEventListener("pagehide", cancelSeatsIfNotPaid);
+        document.addEventListener("visibilitychange", function () {
+            if (document.visibilityState === "hidden") {
+                cancelSeatsIfNotPaid();
+            }
+        }); *@
+    </script>
+}

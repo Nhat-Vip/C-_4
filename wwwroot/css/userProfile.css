@@ -23,6 +23,10 @@ body {
     color: #fff;
 }
 
+.disabled{
+    pointer-events: none;
+    opacity: 0.5;
+}
 .nav-container {
     display: flex;
     justify-content: flex-start;
@@ -281,4 +285,172 @@ label {
     text-align: center;
     padding: 10px;
     display: none;
+}
+
+
+
+
+
+
+/* Reset và kiểu cơ bản */
+/* body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+} */
+
+#ticketTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#ticketTable th,
+#ticketTable td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+#ticketTable th {
+    background-color: #4a90e2;
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#ticketTable tr {
+    transition: background-color 0.3s ease;
+}
+
+#ticketTable tr:hover {
+    background-color: #f5f5f5;
+    cursor: pointer;
+}
+
+#ticketTable tr td .status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.9em;
+    color: #fff;
+}
+
+#ticketTable tr td .status-success {
+    background-color: #2ecc71;
+}
+
+#ticketTable tr td .status-pending {
+    background-color: #f1c40f;
+}
+
+#ticketTable tr td .status-cancelled {
+    background-color: #e74c3c;
+}
+
+/* Modal styling */
+#ticketModal .modal-content {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+#ticketModal .modal-header {
+    background-color: #4a90e2;
+    color: #fff;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+#ticketModal .modal-title {
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+#ticketModal .btn-close {
+    filter: brightness(2);
+}
+
+#ticketModal .modal-body {
+    padding: 20px;
+    background-color: #fff;
+}
+
+#ticketModal .modal-body p {
+    margin: 10px 0;
+    font-size: 1em;
+    line-height: 1.6;
+}
+
+#ticketModal .modal-body strong {
+    color: #2c3e50;
+    margin-right: 10px;
+}
+
+#ticketModal .modal-body #modalTicketDetails {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+#ticketModal .modal-body #modalTicketDetails li {
+    background-color: #f9f9f9;
+    padding: 8px 12px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border-left: 4px solid #4a90e2;
+    color: #34495e;
+}
+
+#ticketModal .modal-footer {
+    border-top: 1px solid #ddd;
+    background-color: #fff;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+#ticketModal .modal-footer .btn {
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#ticketModal .modal-footer .btn:hover {
+    background-color: #357abd;
+}
+
+/* Loader styling (nếu có) */
+#loader {
+    text-align: center;
+    padding: 20px;
+    color: #4a90e2;
+    display: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+
+    #ticketTable th,
+    #ticketTable td {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    #ticketModal .modal-dialog {
+        margin: 10px;
+    }
+
+    #ticketModal .modal-body p {
+        font-size: 0.95em;
+    }
 }

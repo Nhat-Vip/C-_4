@@ -22,7 +22,7 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var ev = await _context.Events.Take(10).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
+        var ev = await _context.Events.Where(e=>e.EventStatus == EventStatus.Approved).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
         return View(ev);
     }
 
@@ -31,11 +31,11 @@ public class HomeController : Controller
         var ev = new List<Event>();
         if (type == "All")
         {
-            ev = await _context.Events.Take(10).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
+            ev = await _context.Events.Where(e=>e.EventStatus == EventStatus.Approved).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
         }
         else
         {
-            ev = await _context.Events.Where(e => e.EventType.ToString() == type).Take(10).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
+            ev = await _context.Events.Where(e => e.EventType.ToString() == type && e.EventStatus == EventStatus.Approved).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
         }
         return PartialView("_EventPartial", ev);
     }
