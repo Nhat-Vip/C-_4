@@ -20,7 +20,8 @@
                 <div class=" position-relative border-1 border-black flex-grow-1" style="min-height: 35px;">
                     <form action="" class="rounded-5 ps-3 search bg-white w-auto d-flex" style="max-width: 300px !important;">
                             @* <label for="Search" class="form-label">Search</label> *@
-                            <input type="text" class="border-0 form-control">
+                        <input type="text" class="border-0 form-control" id="Search" placeholder="Search events..."
+                            name="search" value="" onkeyup="debouncedSearch(this)" />
                             <button type="submit" class="btn"><svg xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 640 640" width="24px" height="24px">
                                     <path
@@ -186,6 +187,23 @@
     const search = document.querySelector('.search');
     const input = document.querySelector('.search input');
 
+        let debounceTimer;
+
+        function debouncedSearch(input) {
+            clearTimeout(debounceTimer); // xóa timer cũ nếu có
+
+            debounceTimer = setTimeout(() => {
+                const searchValue = input.value.trim();
+                if (searchValue) {
+                    window.location.href = `/Home/Search?query=${encodeURIComponent(searchValue)}`;
+                } else {
+                    window.location.href = '/Home/Index';
+                }
+            }, 500); // thời gian chờ (ms) — bạn có thể chỉnh tùy ý
+        }
+
+
+
     input.addEventListener('input', () => {
         if (input.value.trim() !== '') {
             search.classList.add('active');  // Giữ mở rộng khi có chữ
@@ -193,6 +211,10 @@
             search.classList.remove('active'); // Thu nhỏ lại khi trống
         }
     });
+
+    function SeacrhEvent(input) {
+        
+    }
 
 </script>
 </html>

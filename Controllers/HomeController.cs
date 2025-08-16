@@ -22,8 +22,19 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var ev = await _context.Events.Where(e=>e.EventStatus == EventStatus.Approved).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
-        return View(ev);
+        var query = TempData["SearchQuery"]?.ToString();
+        var events = new List<Event>();
+        if (!string.IsNullOrEmpty(query))
+        {
+            events = await _context.Events
+                .Where(e => e.EventName.Contains(query) && e.EventStatus == EventStatus.Approved)
+                .Include(s => s.ShowTimes)
+                .ThenInclude(s => s.ShowTimeTicketGroups)
+                .ToListAsync();
+            return View(events);
+        }
+        events = await _context.Events.Where(e=>e.EventStatus == EventStatus.Approved).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
+        return View(events);
     }
 
     public async Task<IActionResult> GetEvent(string type)
@@ -38,6 +49,22 @@ public class HomeController : Controller
             ev = await _context.Events.Where(e => e.EventType.ToString() == type && e.EventStatus == EventStatus.Approved).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
         }
         return PartialView("_EventPartial", ev);
+    }
+    public async Task<IActionResult> Search(string query)
+    {
+        // if (string.IsNullOrEmpty(query))
+        // {
+        //     return RedirectToAction("Index");
+        // }
+
+        // var events = await _context.Events
+        //     .Where(e => e.EventName.Contains(query) && e.EventStatus == EventStatus.Approved)
+        //     .Include(s => s.ShowTimes)
+        //     .ThenInclude(s => s.ShowTimeTicketGroups)
+        //     .ToListAsync();
+        TempData["SearchQuery"] = query;
+
+        return RedirectToAction("Index");
     }
     public IActionResult Privacy()
     {

@@ -63,21 +63,20 @@
         }
 
         async function approveEvent(EventId) {
-            if (confirm('Bạn có chắc chắn muốn duyệt sự kiện này?')) {
-                try {
-                    const response = await fetch('/UpdateEventStatus', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ EventId, Status: 'Approved' })
-                    });
-                    const data = await response.json();
-                    showSuccess(data.message);
-                    loadEvents();
-                } catch (error) {
-                    console.error('Lỗi:', error);
-                    showError('Lỗi khi duyệt sự kiện');
-                }
+            try {
+                const response = await fetch('/UpdateEventStatus', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ EventId, Status: 'Approved' })
+                });
+                const data = await response.json();
+                showSuccess(data.message);
+                loadEvents();
+            } catch (error) {
+                console.error('Lỗi:', error);
+                showError('Lỗi khi duyệt sự kiện');
             }
+        
         }
 
         async function cancelEvent(eventId) {

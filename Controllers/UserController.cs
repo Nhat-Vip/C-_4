@@ -46,7 +46,7 @@ public class UserController : Controller
         var events = new List<Event>();
         if (status == "All")
         {
-            events = await _context.Events.Where(s => s.UserId == int.Parse(userId!)).ToListAsync();
+            events = await _context.Events.Where(s => s.UserId == int.Parse(userId!) && s.EventStatus != EventStatus.Draft).ToListAsync();
         }
         else
         {
