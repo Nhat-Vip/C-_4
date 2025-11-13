@@ -295,11 +295,7 @@ const validateEventInfo = () =>{
     const startDay = parseInt(String(startd.getDate()).padStart(2, '0'));
     const endDay = parseInt(String(endd.getDate()).padStart(2, '0'));
 
-    if(startEvent.value >= endEvent.value && startEvent.value != "" || startHour+2 >= endHour){
-        startEvent.nextElementSibling.innerHTML = "Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc ít nhất 2 tiếng";
-        hasError = true;
-    }
-    else if(new Date(startEvent.value).getTime() < Date.now()){
+    if(new Date(startEvent.value).getTime() < Date.now()){
         startEvent.nextElementSibling.innerHTML = "Thời gian bắt đầu không được thấp hơn thời gian hiện tại";
         hasError = true;
     }
@@ -495,7 +491,6 @@ const SaveShowTime = async () =>{
         return;
     }
     tabIndex++
-
 }
 const SavePayment = async () =>{
     const BankNumber = document.getElementById("BankNumber").value;
