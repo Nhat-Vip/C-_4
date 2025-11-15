@@ -27,13 +27,13 @@ public class HomeController : Controller
         if (!string.IsNullOrEmpty(query))
         {
             events = await _context.Events
-                .Where(e => e.EventName.Contains(query) && e.EventStatus == EventStatus.Approved)
+                .Where(e => e.EventName.Contains(query) && e.EventStatus == EventStatus.Approved || e.EventStatus == EventStatus.Upcoming)
                 .Include(s => s.ShowTimes)
                 .ThenInclude(s => s.ShowTimeTicketGroups)
                 .ToListAsync();
             return View(events);
         }
-        events = await _context.Events.Where(e=>e.EventStatus == EventStatus.Approved).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
+        events = await _context.Events.Where(e=>e.EventStatus == EventStatus.Approved || e.EventStatus == EventStatus.Upcoming).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
         return View(events);
     }
 
@@ -42,11 +42,11 @@ public class HomeController : Controller
         var ev = new List<Event>();
         if (type == "All")
         {
-            ev = await _context.Events.Where(e=>e.EventStatus == EventStatus.Approved).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
+            ev = await _context.Events.Where(e=>e.EventStatus == EventStatus.Approved || e.EventStatus == EventStatus.Upcoming).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
         }
         else
         {
-            ev = await _context.Events.Where(e => e.EventType.ToString() == type && e.EventStatus == EventStatus.Approved).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
+            ev = await _context.Events.Where(e => e.EventType.ToString() == type && e.EventStatus == EventStatus.Approved || e.EventStatus == EventStatus.Upcoming).Include(s => s.ShowTimes).ThenInclude(s => s.ShowTimeTicketGroups).ToListAsync();
         }
         return PartialView("_EventPartial", ev);
     }

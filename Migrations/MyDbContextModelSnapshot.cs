@@ -259,7 +259,7 @@ namespace ASM_C_4.Migrations
                     b.Property<int>("ShowTimeId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("SeatGroupId")
+                    b.Property<int?>("SeatGroupId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("MaxTicket")

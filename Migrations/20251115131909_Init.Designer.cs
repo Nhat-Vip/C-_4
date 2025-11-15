@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ASM_C_4.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20251113152202_Init")]
+    [Migration("20251115131909_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -262,7 +262,7 @@ namespace ASM_C_4.Migrations
                     b.Property<int>("ShowTimeId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("SeatGroupId")
+                    b.Property<int?>("SeatGroupId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("MaxTicket")
